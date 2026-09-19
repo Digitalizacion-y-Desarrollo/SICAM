@@ -1,0 +1,1 @@
+<script type="application/json" id="system-notifications">{!! json_encode(['success' => session('success'), 'error' => session('error'), 'errors' => $errors->all(), 'fieldErrors' => $errors->messages()], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>

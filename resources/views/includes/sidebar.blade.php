@@ -1,0 +1,105 @@
+<aside id="main-sidebar"
+    class="fixed inset-y-0 left-0 z-40 flex w-[260px] -translate-x-full flex-col bg-surface px-4 py-6 transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0">
+    <div class="relative flex justify-center border-b border-line pb-5">
+        <img src="{{ asset('assets/icons/sicam-logo.png') }}" alt="SICAM" class="h-[124px] w-[344px] object-contain">
+        <button type="button" data-sidebar-close class="absolute right-0 top-0 rounded-md p-2 text-muted lg:hidden"
+            aria-label="Cerrar navegación">×</button>
+    </div>
+
+    <nav class="mt-4 flex-1 space-y-4 overflow-y-auto" aria-label="Navegación principal">
+        <div>
+            <p class="menu-label">General</p>
+            <a href="{{ route('dashboard') }}"
+                class="menu-link {{ request()->routeIs('dashboard') ? 'menu-link-active' : '' }}"
+                @if (request()->routeIs('dashboard')) aria-current="page" @endif><img
+                    src="{{ asset('assets/icons/home.svg') }}" alt="" class="menu-icon">Inicio</a>
+        </div>
+        <div>
+            <p class="menu-label">Módulos</p>
+            <div class="module-dropdown">
+                <button type="button"
+                    class="menu-link menu-link-button group w-full {{ request()->routeIs('patrimonio.*') ? 'text-brand font-semibold' : '' }}"
+                    data-dropdown-toggle="patrimonio-menu"
+                    aria-expanded="{{ request()->routeIs('patrimonio.*') ? 'true' : 'false' }}"
+                    aria-controls="patrimonio-menu">
+                    <img src="{{ asset('assets/icons/building.svg') }}" alt="" class="menu-icon">
+                    <span>Patrimonio</span>
+                    <img src="{{ asset('assets/icons/chevron-down.svg') }}" alt=""
+                        class="dropdown-arrow h-4 w-4 opacity-90 {{ request()->routeIs('patrimonio.*') ? 'is-open' : '' }}">
+                </button>
+                <div id="patrimonio-menu"
+                    class="dropdown-panel {{ request()->routeIs('patrimonio.*') ? 'is-open' : '' }}"
+                    @unless (request()->routeIs('patrimonio.*')) hidden @endunless>
+                    <div class="min-h-0">
+                        <a href="{{ route('patrimonio.resumen') }}"
+                            class="dropdown-link {{ request()->routeIs('patrimonio.resumen') ? 'dropdown-link-active' : '' }}">Resumen</a>
+                        <a href="{{ route('patrimonio.bienes') }}"
+                            class="dropdown-link {{ request()->routeIs('patrimonio.bienes') ? 'dropdown-link-active' : '' }}">Bienes</a>
+                        <a href="{{ route('patrimonio.responsables') }}"
+                            class="dropdown-link {{ request()->routeIs('patrimonio.responsables') ? 'dropdown-link-active' : '' }}">Responsables</a>
+                        <a href="{{ route('patrimonio.asignaciones.index') }}"
+                            class="dropdown-link {{ request()->routeIs('patrimonio.asignaciones.*') ? 'dropdown-link-active' : '' }}">Asignaciones</a>
+                        <a href="{{ route('patrimonio.movimientos.index') }}"
+                            class="dropdown-link {{ request()->routeIs('patrimonio.movimientos.*') ? 'dropdown-link-active' : '' }}">Movimientos</a>
+                        <a href="{{ route('patrimonio.categorias') }}"
+                            class="dropdown-link {{ request()->routeIs('patrimonio.categorias') ? 'dropdown-link-active' : '' }}">Categorías</a>
+                        <a href="{{ route('patrimonio.importaciones.index') }}"
+                            class="dropdown-link {{ request()->routeIs('patrimonio.importaciones.*') ? 'dropdown-link-active' : '' }}">Importaciones</a>
+                    </div>
+                </div>
+            </div>
+            <div class="module-dropdown">
+                <button type="button"
+                    class="menu-link menu-link-button group w-full {{ request()->routeIs('software.*') ? 'text-brand font-semibold' : '' }}"
+                    data-dropdown-toggle="software-menu"
+                    aria-expanded="{{ request()->routeIs('software.*') ? 'true' : 'false' }}"
+                    aria-controls="software-menu">
+                    <img src="{{ asset('assets/icons/terminal-square.svg') }}" alt="" class="menu-icon">
+                    <span>Software</span>
+                    <img src="{{ asset('assets/icons/chevron-down.svg') }}" alt=""
+                        class="dropdown-arrow h-4 w-4 opacity-90 {{ request()->routeIs('software.*') ? 'is-open' : '' }}">
+                </button>
+                <div id="software-menu" class="dropdown-panel {{ request()->routeIs('software.*') ? 'is-open' : '' }}"
+                    @unless (request()->routeIs('software.*')) hidden @endunless>
+                    <div class="min-h-0">
+                        <a href="{{ route('software.resumen') }}"
+                            class="dropdown-link {{ request()->routeIs('software.resumen') ? 'dropdown-link-active' : '' }}">Resumen</a>
+                    </div>
+                    <div class="min-h-0">
+                        <a href="{{ route('software.sistemas') }}"
+                            class="dropdown-link {{ request()->routeIs('software.sistemas') ? 'dropdown-link-active' : '' }}">Sistemas</a>
+                    </div>
+                </div>
+            </div>
+            <a href="#" class="menu-link"><img src="{{ asset('assets/icons/file-key.svg') }}" alt=""
+                    class="menu-icon">Licencias <span class="menu-badge">Próximamente</span></a>
+            <a href="#" class="menu-link"><img src="{{ asset('assets/icons/chart-network.svg') }}" alt=""
+                    class="menu-icon">Redes <span class="menu-badge">Próximamente</span></a>
+        </div>
+        <div>
+            <p class="menu-label">Organización</p>
+            <a href="#" class="menu-link"><img src="{{ asset('assets/icons/chart-network.svg') }}" alt=""
+                    class="menu-icon">Dependencias</a>
+            <a href="#" class="menu-link"><img src="{{ asset('assets/icons/map-pin.svg') }}" alt=""
+                    class="menu-icon">Áreas</a>
+        </div>
+        <div>
+            <p class="menu-label">Información</p>
+            <a href="#" class="menu-link"><img src="{{ asset('assets/icons/bar-chart.svg') }}" alt=""
+                    class="menu-icon">Reportes</a>
+            <a href="{{ route('patrimonio.auditoria') }}" class="menu-link"><img
+                    src="{{ asset('assets/icons/shield-check.svg') }}" alt="" class="menu-icon">Auditoría</a>
+        </div>
+        <div>
+            <p class="menu-label">Administración</p>
+            <a href="#" class="menu-link"><img src="{{ asset('assets/icons/cog.svg') }}" alt=""
+                    class="menu-icon">Configuración</a>
+        </div>
+    </nav>
+
+    <div class="pt-4 text-[10px] leading-4 text-muted">
+        <p>SICAM Municipal v2.4</p>
+        <p>H. Ayuntamiento Constitucional</p>
+    </div>
+</aside>
+<div id="sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-ink/30 lg:hidden"></div>

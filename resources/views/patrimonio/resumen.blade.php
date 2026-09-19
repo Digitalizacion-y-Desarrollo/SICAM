@@ -1,0 +1,10 @@
+@extends('layouts.app')
+@section('title', 'SICAM | Resumen de Patrimonio')
+@section('content')
+<div class="mx-auto max-w-[1440px] space-y-5 p-4 sm:p-6 lg:p-8">
+<header class="flex flex-wrap items-center justify-between gap-4"><div><h1 class="text-2xl font-bold">Resumen de Patrimonio</h1><p class="mt-1 text-sm text-muted">Control de bienes del Ayuntamiento de Nezahualcóyotl</p></div><a data-crud href="{{ route('patrimonio.bienes.create') }}" class="action-button action-button-primary">Registrar bien</a></header>
+<section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" data-tour="Estas cifras se calculan con los bienes y resguardos registrados." data-tour-title="Indicadores">@foreach($metricas as $label => $value)<div class="form-card"><p class="text-xs text-muted">{{ $label }}</p><p class="mt-2 text-3xl font-bold">{{ number_format($value) }}</p></div>@endforeach</section>
+<div class="grid gap-5 xl:grid-cols-2"><section class="form-card"><h2>Bienes por categoría</h2><div class="mt-4 space-y-3">@forelse($categorias as $categoria)<a class="flex justify-between rounded-lg bg-surface-alt p-3 text-sm" href="{{ route('patrimonio.categorias', ['categoria' => $categoria]) }}"><span>{{ $categoria->nombre }}</span><strong>{{ $categoria->bienes_count }}</strong></a>@empty<p class="text-sm text-muted">Sin categorías registradas.</p>@endforelse</div></section>
+<section class="form-card" data-tour="Abre Movimientos para consultar el historial completo." data-tour-title="Actividad reciente"><div class="flex justify-between"><h2>Actividad reciente</h2><a href="{{ route('patrimonio.movimientos.index') }}" class="text-sm text-brand">Ver todo</a></div><div class="mt-4 space-y-3">@forelse($movimientos as $movimiento)<a href="{{ route('patrimonio.movimientos.show', $movimiento) }}" class="block rounded-lg border border-line p-3"><p class="text-sm font-semibold">{{ str_replace('_', ' ', $movimiento->tipo) }} · {{ $movimiento->bien?->folio_sicam }}</p><p class="mt-1 text-xs text-muted">{{ $movimiento->created_at->format('d/m/Y H:i') }}</p></a>@empty<p class="text-sm text-muted">Sin actividad registrada.</p>@endforelse</div></section></div>
+</div>
+@endsection

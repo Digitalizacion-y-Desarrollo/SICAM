@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'required' => 'El campo :attribute es obligatorio.',
+    'required_if' => 'El campo :attribute es obligatorio cuando :other es :value.',
+    'string' => 'El campo :attribute debe ser texto.',
+    'integer' => 'El campo :attribute debe ser un número entero.',
+    'numeric' => 'El campo :attribute debe ser numérico.',
+    'boolean' => 'El campo :attribute debe indicar sí o no.',
+    'email' => 'El campo :attribute debe contener un correo válido.',
+    'array' => 'El campo :attribute debe contener una lista válida.',
+    'uuid' => 'La identificación de la solicitud no es válida. Recarga el formulario.',
+    'exists' => 'El registro seleccionado en :attribute no está disponible.',
+    'unique' => 'El valor de :attribute ya está registrado.',
+    'in' => 'La opción seleccionada en :attribute no es válida.',
+    'distinct' => 'El campo :attribute contiene un valor repetido.',
+    'file' => 'El campo :attribute debe ser un archivo.',
+    'uploaded' => 'No se pudo cargar :attribute. Revisa el tamaño del archivo.',
+    'mimes' => 'El archivo :attribute debe tener formato :values.',
+    'image' => 'El archivo :attribute debe ser una imagen.',
+    'date_format' => 'El campo :attribute debe tener el formato :format.',
+    'max' => ['string' => 'El campo :attribute no debe superar :max caracteres.', 'numeric' => 'El campo :attribute no debe superar :max.', 'file' => 'El archivo :attribute no debe superar :max KB.', 'array' => 'El campo :attribute admite hasta :max elementos.'],
+    'min' => ['string' => 'El campo :attribute debe tener al menos :min caracteres.', 'numeric' => 'El campo :attribute debe ser mayor o igual a :min.', 'array' => 'El campo :attribute debe tener al menos :min elementos.'],
+    'attributes' => ['categoria_id' => 'categoría', 'bien_id' => 'bien', 'responsable_id' => 'responsable', 'dependencia_id_accesos' => 'dependencia', 'area_id_accesos' => 'área', 'numero_empleado' => 'número de empleado', 'categoria_padre_id' => 'categoría padre'],
+];
