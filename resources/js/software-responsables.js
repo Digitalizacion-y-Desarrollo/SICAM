@@ -77,9 +77,22 @@ document.querySelectorAll('[data-nuevo-responsable]').forEach((container) => {
             const responsible = payload.responsable;
             if (!responsible?.id) throw new Error('No se pudo confirmar el registro.');
             for (const role of ['funcional', 'tecnico']) {
-                const select = systemForm.elements.namedItem(`responsable_${role}_id`);
-                select.add(new Option(responsible.nombre_completo + (responsible.cargo ? ` · ${responsible.cargo}` : ''), responsible.id));
-                if (role === container.dataset.nuevoResponsable) select.value = String(responsible.id);
+                const hidden = systemForm.elements.namedItem(`responsable_${role}_id`);
+                const input = systemForm.querySelector(`#responsable-${role}`);
+                const datalist = input?.list;
+
+                if (!hidden || !input || !datalist) continue;
+
+                const option = document.createElement('option');
+                option.value = responsible.nombre_completo;
+                option.dataset.id = String(responsible.id);
+                option.textContent = responsible.cargo ? ` ${responsible.cargo}` : '';
+                datalist.appendChild(option);
+
+                if (role === container.dataset.nuevoResponsable) {
+                    input.value = responsible.nombre_completo;
+                    hidden.value = String(responsible.id);
+                }
             }
             inputs.forEach((input) => { input.value = ''; });
             updateAreas();

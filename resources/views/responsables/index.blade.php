@@ -5,25 +5,36 @@
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
                 <h1 class="text-2xl font-bold">Responsables</h1>
-                <p class="mt-1 text-sm text-muted">Personas que pueden tener bienes bajo su responsabilidad</p>
+                <p class="mt-1 text-sm text-muted">Personas que pueden tener bienes, sistemas o licencias bajo su responsabilidad</p>
             </div>
-            <details class="relative">
+            <details class="relative" @if ($errors->any()) open @endif>
                 <summary class="action-button action-button-primary list-none cursor-pointer">+ Nuevo responsable</summary>
                 <form method="POST" action="{{ route('patrimonio.responsables.store') }}"
                     class="absolute right-0 z-20 mt-2 grid w-[360px] max-w-[90vw] gap-3 rounded-xl border border-line bg-white p-4 shadow-xl">
-                    @csrf<input name="numero_empleado" class="form-control" placeholder="Número de empleado"><input
-                        name="nombre" class="form-control" placeholder="Nombre" required>
+                    @csrf
+                    @if ($errors->any())
+                        <div class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700" role="alert">
+                            <p class="font-semibold">Revisa los campos marcados antes de guardar.</p>
+                            <ul class="mt-1 list-disc pl-5">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    <input name="numero_empleado" value="{{ old('numero_empleado') }}" class="form-control @error('numero_empleado') border-red-500 @enderror" placeholder="Número de empleado">
+                    <input name="nombre" value="{{ old('nombre') }}" class="form-control @error('nombre') border-red-500 @enderror" placeholder="Nombre" required>
                     <div class="grid grid-cols-2 gap-2"><input name="apellido_paterno" class="form-control"
-                            placeholder="Apellido paterno"><input name="apellido_materno" class="form-control"
-                            placeholder="Apellido materno"></div><input name="cargo" class="form-control"
-                        placeholder="Cargo">
-                    @include('patrimonio.includes.departamentos-responsable', [
+                            value="{{ old('apellido_paterno') }}" placeholder="Apellido paterno"><input name="apellido_materno" class="form-control"
+                            value="{{ old('apellido_materno') }}" placeholder="Apellido materno"></div><input name="cargo" class="form-control"
+                        value="{{ old('cargo') }}" placeholder="Cargo">
+                    @include('responsables.includes.departamentos-responsable', [
                         'prefix' => 'nuevo-responsable',
                         'dependenciaValue' => old('dependencia_id_accesos'),
                         'areaValue' => old('area_id_accesos'),
                     ])
-                    <input name="correo" type="email" class="form-control"
-                        placeholder="Correo"><input name="telefono" class="form-control" placeholder="Teléfono"><button
+                    <input name="correo" type="email" value="{{ old('correo') }}" class="form-control @error('correo') border-red-500 @enderror"
+                        placeholder="Correo"><input name="telefono" value="{{ old('telefono') }}" class="form-control" placeholder="Teléfono"><button
                         class="action-button action-button-primary justify-center">Guardar responsable</button>
                 </form>
             </details>

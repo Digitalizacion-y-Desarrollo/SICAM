@@ -160,7 +160,7 @@
                             Descripción *
                         </span>
 
-                        <textarea name="descripcion" class="form-control" rows="4" maxlength="5000"
+                        <textarea name="descripcion" class="form-control h-auto min-h-28 p-3" rows="4" maxlength="5000"
                             placeholder="Describe brevemente qué es y qué hace el sistema." required>{{ $fieldValue('descripcion') }}</textarea>
 
                         @error('descripcion')
@@ -179,7 +179,7 @@
                             Objetivo
                         </span>
 
-                        <textarea name="objetivo" class="form-control" rows="4" maxlength="5000"
+                        <textarea name="objetivo" class="form-control h-auto min-h-28 p-3" rows="4" maxlength="5000"
                             placeholder="Indica el objetivo principal del sistema.">{{ $fieldValue('objetivo') }}</textarea>
 
                         @error('objetivo')
@@ -412,7 +412,7 @@
 
 
                         {{-- ÁREA --}}
-                        <label class="block">
+                        <label id="software-area-field" class="block" hidden>
 
                             <span class="form-label">
                                 Área *
@@ -435,26 +435,7 @@
                             @enderror
 
                         </label>
-
                     </div>
-
-                    <div class="mt-4 rounded-lg bg-surface-alt p-3">
-
-                        <div class="flex gap-2">
-
-                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                            </svg>
-
-
-
-                        </div>
-
-                    </div>
-
                 </section>
 
 
@@ -624,14 +605,49 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
+            function configurarResponsable(inputId, hiddenId, datalistId) {
+                const input = document.getElementById(inputId);
+                const hidden = document.getElementById(hiddenId);
+                const datalist = document.getElementById(datalistId);
+
+                if (!input || !hidden || !datalist) {
+                    return;
+                }
+
+                const actualizarResponsable = function() {
+                    const option = Array.from(datalist.options).find(function(item) {
+                        return item.value === input.value;
+                    });
+
+                    hidden.value = option?.dataset.id ?? '';
+                };
+
+                input.addEventListener('input', actualizarResponsable);
+                input.addEventListener('change', actualizarResponsable);
+            }
+
+            configurarResponsable(
+                'responsable-funcional',
+                'responsable-funcional-id',
+                'responsables-funcionales'
+            );
+
+            configurarResponsable(
+                'responsable-tecnico',
+                'responsable-tecnico-id',
+                'responsables-tecnicos'
+            );
+
             const dependenciaInput = document.getElementById('software-dependencia');
             const areaInput = document.getElementById('software-area');
+            const areaField = document.getElementById('software-area-field');
             const areasDatalist = document.getElementById('areas-accesos');
             const departamentosData = document.getElementById('departamentos-accesos-data');
 
             if (
                 !dependenciaInput ||
                 !areaInput ||
+                !areaField ||
                 !areasDatalist ||
                 !departamentosData
             ) {
@@ -648,7 +664,7 @@
             }
 
 
-            function actualizarAreas() {
+            function actualizarAreas(limpiarArea = false) {
 
                 const dependenciaNombre = dependenciaInput.value.trim();
 
@@ -662,12 +678,22 @@
                 });
 
                 if (!dependencia) {
+                    areaField.hidden = true;
+                    if (limpiarArea) areaInput.value = '';
                     return;
                 }
 
                 const areas = departamentos.filter(function(item) {
                     return String(item.parent_id) === String(dependencia.id);
                 });
+
+                if (!areas.length) {
+                    areaField.hidden = true;
+                    if (limpiarArea) areaInput.value = '';
+                    return;
+                }
+
+                areaField.hidden = false;
 
                 areas.forEach(function(area) {
 
@@ -684,9 +710,7 @@
 
             dependenciaInput.addEventListener('input', function() {
 
-                areaInput.value = '';
-
-                actualizarAreas();
+                actualizarAreas(true);
 
             });
 

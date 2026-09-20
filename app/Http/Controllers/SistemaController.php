@@ -10,6 +10,7 @@ use App\Models\Responsable;
 use App\Models\Sistema;
 use App\Services\DepartamentosAccesos;
 use App\Services\GuardarSistema;
+use App\Services\ObtenerBitacoraSistema;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -17,6 +18,45 @@ use Illuminate\View\View;
 
 class SistemaController extends Controller
 {
+    public function resumen(): View
+    {
+        $conteosEstado = Sistema::query()
+            ->selectRaw('estado, COUNT(*) as total')
+            ->groupBy('estado')
+            ->pluck('total', 'estado');
+        $total = $conteosEstado->sum();
+
+        $estadoResumen = collect(Sistema::ESTADOS)->map(fn ($etiqueta, $estado) => [
+            'estado' => $estado,
+            'etiqueta' => $etiqueta,
+            'total' => $conteosEstado->get($estado, 0),
+            'porcentaje' => $total ? (int) round(($conteosEstado->get($estado, 0) / $total) * 100) : 0,
+        ])->values();
+        $recientes = Sistema::query()
+            ->with(['responsableFuncional', 'responsableTecnico'])
+            ->latest('updated_at')
+            ->take(5)
+            ->get();
+        $porDependencia = Sistema::query()
+            ->selectRaw('dependencia_id_accesos, COUNT(*) as total')
+            ->groupBy('dependencia_id_accesos')
+            ->orderByDesc('total')
+            ->orderBy('dependencia_id_accesos')
+            ->take(5)
+            ->get();
+
+        $metricas = [
+            'total' => $total,
+            'produccion' => $conteosEstado->get('produccion', 0),
+            'en_proceso' => $conteosEstado->get('desarrollo', 0) + $conteosEstado->get('pruebas', 0),
+            'sin_responsable' => Sistema::query()
+                ->where(fn ($query) => $query->whereNull('responsable_funcional_id')->orWhereNull('responsable_tecnico_id'))
+                ->count(),
+        ];
+
+        return view('software.resumen', compact('metricas', 'estadoResumen', 'recientes', 'porDependencia'));
+    }
+
     public function index(Request $request): View
     {
         $filtros = $request->validate([
@@ -79,9 +119,11 @@ class SistemaController extends Controller
             ->with('message', 'Sistema actualizado correctamente');
     }
 
-    public function show (Sistema $sistema){
+    public function show(Sistema $sistema, ObtenerBitacoraSistema $obtenerBitacoraSistema): View
+    {
+        $historial = $obtenerBitacoraSistema->ejecutar($sistema);
 
-        return view('software.sistemas.show', compact('sistema'));
+        return view('software.sistemas.show', compact('sistema', 'historial'));
     }
 
 

@@ -16,4 +16,32 @@ class UpdateResponsableRequest extends FormRequest
     {
         return ['numero_empleado' => ['nullable', 'string', 'max:50', Rule::unique('responsables', 'numero_empleado')->ignore($this->route('responsable'))], 'nombre' => ['required', 'string', 'max:100'], 'apellido_paterno' => ['nullable', 'string', 'max:100'], 'apellido_materno' => ['nullable', 'string', 'max:100'], 'cargo' => ['nullable', 'string', 'max:150'], 'dependencia_id_accesos' => ['required', 'string', 'max:100'], 'area_id_accesos' => ['nullable', 'string', 'max:100'], 'correo' => ['nullable', 'email', 'max:150'], 'telefono' => ['nullable', 'string', 'max:30'], 'activo' => ['nullable', 'boolean']];
     }
+
+    public function messages(): array
+    {
+        return [
+            'required' => 'El campo :attribute es obligatorio.',
+            'string' => 'El campo :attribute debe ser texto.',
+            'max' => 'El campo :attribute no debe superar :max caracteres.',
+            'email' => 'El campo :attribute debe contener un correo válido.',
+            'unique' => 'El valor de :attribute ya está registrado.',
+            'boolean' => 'El campo :attribute debe indicar sí o no.',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'numero_empleado' => 'número de empleado',
+            'nombre' => 'nombre',
+            'apellido_paterno' => 'apellido paterno',
+            'apellido_materno' => 'apellido materno',
+            'cargo' => 'cargo',
+            'dependencia_id_accesos' => 'dependencia',
+            'area_id_accesos' => 'área',
+            'correo' => 'correo electrónico',
+            'telefono' => 'teléfono',
+            'activo' => 'estado',
+        ];
+    }
 }

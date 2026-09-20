@@ -169,7 +169,7 @@
                             Descripción *
                         </span>
 
-                        <textarea name="descripcion" class="form-control" rows="4" maxlength="5000"
+                        <textarea name="descripcion" class="form-control h-auto min-h-28 p-3" rows="4" maxlength="5000"
                             placeholder="Describe brevemente qué es y qué hace el sistema." required>{{ $fieldValue('descripcion') }}</textarea>
 
 
@@ -189,7 +189,7 @@
                             Objetivo
                         </span>
 
-                        <textarea name="objetivo" class="form-control" rows="4" maxlength="5000"
+                        <textarea name="objetivo" class="form-control h-auto min-h-28 p-3" rows="4" maxlength="5000"
                             placeholder="Indica el objetivo principal del sistema.">{{ $fieldValue('objetivo') }}</textarea>
 
 
@@ -466,7 +466,7 @@
 
 
                         {{-- ÁREA --}}
-                        <label class="block">
+                        <label id="software-area-field" class="block" hidden>
 
                             <span class="form-label">
                                 Área
@@ -854,6 +854,11 @@
                     'software-area'
                 );
 
+            const areaField =
+                document.getElementById(
+                    'software-area-field'
+                );
+
 
             const areasDatalist =
                 document.getElementById(
@@ -870,6 +875,7 @@
             if (
                 !dependenciaInput ||
                 !areaInput ||
+                !areaField ||
                 !areasDatalist ||
                 !departamentosData
             ) {
@@ -905,7 +911,7 @@
             |--------------------------------------------------------------------------
             */
 
-            function actualizarAreas() {
+            function actualizarAreas(limpiarArea = false) {
 
                 const dependenciaNombre =
                     dependenciaInput.value.trim();
@@ -927,6 +933,9 @@
 
                 if (!dependencia) {
 
+                    areaField.hidden = true;
+                    if (limpiarArea) areaInput.value = '';
+
                     return;
 
                 }
@@ -941,6 +950,17 @@
                         );
 
                     });
+
+                if (!areas.length) {
+
+                    areaField.hidden = true;
+                    if (limpiarArea) areaInput.value = '';
+
+                    return;
+
+                }
+
+                areaField.hidden = false;
 
 
                 areas.forEach(function(area) {
@@ -971,9 +991,7 @@
                 'input',
                 function() {
 
-                    areaInput.value = '';
-
-                    actualizarAreas();
+                    actualizarAreas(true);
 
                 }
             );

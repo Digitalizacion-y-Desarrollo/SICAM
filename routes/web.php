@@ -6,26 +6,35 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BienController;
 use App\Http\Controllers\BienPublicoController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImportacionController;
+use App\Http\Controllers\LicenciaController;
 use App\Http\Controllers\MovimientoController;
+use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ResponsableController;
 use App\Http\Controllers\ResumenPatrimonioController;
 use App\Http\Controllers\SistemaController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('dashboard.index');
-})->name('dashboard');
+Route::get('/', DashboardController::class)->name('dashboard');
 
 Route::get('/login', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
+Route::prefix('licencia')->name('licencia.')->group(function () {
+    Route::get('/resumen', [LicenciaController::class, 'resumen'])->name('resumen');
+    Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores');
+    Route::post('/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
+    Route::get('/', [LicenciaController::class, 'index'])->name('index');
+    Route::get('/create', [LicenciaController::class, 'create'])->name('create');
+    Route::post('/', [LicenciaController::class, 'store'])->name('store');
+});
+
 Route::prefix('software')->name('software.')->group(function () {
 
-    Route::view('/resumen', 'software.pendiente', [
-        'titulo' => 'Resumen'
-    ])->name('resumen');
+    Route::get('/resumen', [SistemaController::class, 'resumen'])
+        ->name('resumen');
 
     Route::get('/sistemas', [SistemaController::class, 'index'])
         ->name('sistemas');
@@ -50,31 +59,6 @@ Route::prefix('software')->name('software.')->group(function () {
         [SistemaController::class, 'destroy']
     )->name('sistemas.destroy');
 
-
-
-    Route::view('/responsables', 'software.pendiente', [
-        'titulo' => 'Responsables'
-    ])->name('responsables');
-
-    Route::view('/versiones', 'software.pendiente', [
-        'titulo' => 'Versiones'
-    ])->name('versiones');
-
-    Route::view('/tecnologias', 'software.pendiente', [
-        'titulo' => 'Tecnologías'
-    ])->name('tecnologias');
-
-    Route::view('/ambientes', 'software.pendiente', [
-        'titulo' => 'Ambientes'
-    ])->name('ambientes');
-
-    Route::view('/documentacion', 'software.pendiente', [
-        'titulo' => 'Documentación'
-    ])->name('documentacion');
-
-    Route::view('/historial', 'software.pendiente', [
-        'titulo' => 'Historial de cambios'
-    ])->name('historial');
 });
 
 

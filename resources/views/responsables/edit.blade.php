@@ -9,7 +9,7 @@
 <label class="block"><span class="form-label">Apellido paterno</span><input class="form-control" name="apellido_paterno" type="text" value="{{ old('apellido_paterno', $responsable->apellido_paterno) }}" ></label>
 <label class="block"><span class="form-label">Apellido materno</span><input class="form-control" name="apellido_materno" type="text" value="{{ old('apellido_materno', $responsable->apellido_materno) }}" ></label>
 <label class="block"><span class="form-label">Cargo</span><input class="form-control" name="cargo" type="text" value="{{ old('cargo', $responsable->cargo) }}" ></label>
-@include('patrimonio.includes.departamentos-responsable', [
+@include('responsables.includes.departamentos-responsable', [
     'prefix' => 'editar-responsable',
     'dependenciaValue' => old('dependencia_id_accesos', $responsable->dependencia_id_accesos),
     'areaValue' => old('area_id_accesos', $responsable->area_id_accesos),

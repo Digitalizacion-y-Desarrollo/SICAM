@@ -43,6 +43,27 @@ class SistemasTest extends TestCase
             ->assertSee('action="'.route('software.sistemas.update', $software).'"', false);
     }
 
+    public function test_software_summary_uses_live_system_metrics(): void
+    {
+        app(GuardarSistema::class)->ejecutar($this->datos([
+            'clave' => 'SIS-PROD',
+            'nombre' => 'Portal ciudadano',
+            'estado' => 'produccion',
+        ]));
+        app(GuardarSistema::class)->ejecutar($this->datos([
+            'clave' => 'SIS-TEST',
+            'nombre' => 'Gestión interna',
+            'estado' => 'pruebas',
+        ]));
+
+        $this->get(route('software.resumen'))
+            ->assertOk()
+            ->assertSee('Resumen')
+            ->assertSee('Portal ciudadano')
+            ->assertSee('Gestión interna')
+            ->assertViewHas('metricas', fn (array $metricas) => $metricas['total'] === 2 && $metricas['produccion'] === 1 && $metricas['en_proceso'] === 1 && $metricas['sin_responsable'] === 2);
+    }
+
     private function datos(array $cambios = []): array
     {
         return array_replace([
@@ -84,6 +105,55 @@ class SistemasTest extends TestCase
         $this->get(route('software.sistemas.show', $sistema))->assertOk()->assertSee('Historial de cambios')->assertSee($user->name);
         $this->get(route('software.sistemas.edit', $sistema))->assertOk()->assertSee('Guardar cambios');
         $this->get(route('software.sistemas.create'))->assertOk()->assertSee('Guardar sistema');
+    }
+
+    public function test_creation_persists_selected_responsibles(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $funcional = Responsable::create([
+            'nombre' => 'Ana',
+            'dependencia_id_accesos' => 'Digitalización',
+            'activo' => true,
+        ]);
+        $tecnico = Responsable::create([
+            'nombre' => 'Luis',
+            'dependencia_id_accesos' => 'Digitalización',
+            'activo' => true,
+        ]);
+
+        $this->post(route('software.sistemas.store'), $this->datos([
+            'responsable_funcional_id' => $funcional->id,
+            'responsable_tecnico_id' => $tecnico->id,
+        ]))->assertSessionHasNoErrors();
+
+        $sistema = Sistema::sole();
+        $this->assertSame($funcional->id, $sistema->responsable_funcional_id);
+        $this->assertSame($tecnico->id, $sistema->responsable_tecnico_id);
+    }
+
+    public function test_system_detail_displays_a_field_by_field_audit_log(): void
+    {
+        $user = User::factory()->create(['name' => 'María Auditora']);
+        $this->actingAs($user);
+        $sistema = app(GuardarSistema::class)->ejecutar($this->datos());
+
+        app(GuardarSistema::class)->ejecutar($this->datos([
+            'nombre' => 'Sistema actualizado',
+            'estado' => 'produccion',
+        ]), $sistema);
+
+        $this->get(route('software.sistemas.show', $sistema))
+            ->assertOk()
+            ->assertSee('Últimas actualizaciones')
+            ->assertSee('Creación')
+            ->assertSee('Actualización')
+            ->assertSee('Nombre')
+            ->assertSee('Sistema de convocatorias')
+            ->assertSee('Sistema actualizado')
+            ->assertSee('Estado')
+            ->assertSee('En desarrollo')
+            ->assertSee('En producción')
+            ->assertSee('María Auditora');
     }
 
     public function test_invalid_values_and_duplicate_key_do_not_write_data(): void

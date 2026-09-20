@@ -6,8 +6,8 @@ use App\Http\Requests\StoreResponsableRequest;
 use App\Http\Requests\UpdateResponsableRequest;
 use App\Models\Responsable;
 use App\Services\DepartamentosAccesos;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -21,7 +21,7 @@ class ResponsableController extends Controller
             ->latest()->paginate(10)->withQueryString();
         $departamentos = $departamentosAccesos->listar();
 
-        return view('patrimonio.responsables', compact('responsables', 'departamentos'));
+        return view('responsables.index', compact('responsables', 'departamentos'));
     }
 
     public function store(StoreResponsableRequest $request): RedirectResponse|JsonResponse
@@ -68,13 +68,13 @@ class ResponsableController extends Controller
     {
         $asignaciones = $responsable->asignaciones()->with('bien')->latest('id')->paginate(15);
 
-        return view('patrimonio.detalle-responsable', compact('responsable', 'asignaciones'));
+        return view('responsables.show', compact('responsable', 'asignaciones'));
     }
 
     public function edit(Responsable $responsable, DepartamentosAccesos $departamentosAccesos): View
     {
         $departamentos = $departamentosAccesos->listar();
 
-        return view('patrimonio.editar-responsable', compact('responsable', 'departamentos'));
+        return view('responsables.edit', compact('responsable', 'departamentos'));
     }
 }

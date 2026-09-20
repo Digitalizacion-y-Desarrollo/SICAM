@@ -1,8 +1,9 @@
 ﻿import './bootstrap';
 import './software-responsables';
+import Swal from 'sweetalert2';
 // import './registro-bien';
 // import './campos-categoria';
-// import './departamentos-responsable';
+import './departamentos-responsable';
 // import './asignacion';
 // import './patrimonio-ui';
 
@@ -59,3 +60,16 @@ document.querySelectorAll('[data-password-toggle]').forEach((button) => {
     });
 });
 
+const notifications = document.querySelector('#system-notifications');
+if (notifications) {
+    const data = JSON.parse(notifications.textContent);
+
+    if (data.success) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Acción completada',
+            text: data.success,
+            confirmButtonColor: '#601633',
+        });
+    }
+}

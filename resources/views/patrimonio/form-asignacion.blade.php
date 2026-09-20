@@ -7,7 +7,7 @@
 <label class="block"><span class="form-label">Tipo de responsabilidad *</span><select class="form-control" name="responsabilidad" data-asignacion-tipo><option value="persona" @selected(old('responsabilidad', strtolower($asignacion?->tipo_responsabilidad ?? 'persona')) === 'persona')>Persona</option><option value="area" @selected(old('responsabilidad', strtolower($asignacion?->tipo_responsabilidad ?? 'persona')) === 'area')>Área</option></select></label>
 <label class="block"><span class="form-label">Responsable (para asignación a persona)</span><select class="form-control" name="responsable_id" data-asignacion-responsable><option value="">Selecciona un responsable</option>@foreach($responsables as $r)<option value="{{ $r->id }}" data-dependencia="{{ $r->dependencia_id_accesos }}" data-area="{{ $r->area_id_accesos }}" @selected(old('responsable_id', $asignacion?->responsable_id) == $r->id)>{{ $r->nombre_completo }} · {{ $r->dependencia_id_accesos }}{{ $r->area_id_accesos ? ' / '.$r->area_id_accesos : '' }}</option>@endforeach</select><span class="mt-1 block text-xs text-muted">La dependencia y el área se tomarán de los datos del responsable.</span></label>
 <div class="grid gap-4 sm:grid-cols-2">
-@include('patrimonio.includes.departamentos-responsable', [
+@include('responsables.includes.departamentos-responsable', [
     'prefix' => 'asignacion',
     'dependenciaValue' => old('dependencia_id_accesos', $asignacion?->dependencia_id_accesos),
     'areaValue' => old('area_id_accesos', $asignacion?->area_id_accesos),

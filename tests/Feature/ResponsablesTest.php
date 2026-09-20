@@ -21,7 +21,8 @@ class ResponsablesTest extends TestCase
         $this->post(route('patrimonio.responsables.store'), [
             'nombre' => 'Responsable sin área',
             'dependencia_id_accesos' => 'DIRECCIÓN DE ADMINISTRACIÓN',
-        ])->assertSessionHasNoErrors();
+        ])->assertSessionHasNoErrors()
+            ->assertSessionHas('success', 'Responsable registrado correctamente.');
 
         $responsable = Responsable::sole();
         $this->assertNull($responsable->area_id_accesos);
@@ -62,6 +63,9 @@ class ResponsablesTest extends TestCase
 
         $this->get(route('patrimonio.responsables'))
             ->assertOk()
+            ->assertSee('Revisa los campos marcados antes de guardar.')
+            ->assertSee('El campo nombre es obligatorio.')
+            ->assertSee('El campo dependencia es obligatorio.')
             ->assertSee('"fieldErrors":{"nombre":', false)
             ->assertSee('"dependencia_id_accesos":', false);
     }
