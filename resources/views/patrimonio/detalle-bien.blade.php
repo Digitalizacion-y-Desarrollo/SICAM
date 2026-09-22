@@ -6,9 +6,13 @@
     <header class="flex flex-wrap items-start justify-between gap-4">
         <div><p class="text-sm font-semibold text-brand">{{ $bien->folio_sicam }}</p><h1 class="mt-2 text-2xl font-bold">{{ $bien->nombre }}</h1><p class="mt-1 text-sm text-muted">{{ $bien->categoria?->nombre }} · {{ str_replace('_', ' ', $bien->estado) }}</p></div>
         <div class="flex flex-wrap gap-2" data-tour="Puedes editar el bien o descargar su QR para imprimir una etiqueta." data-tour-title="Acciones del bien">
-            <a data-crud href="{{ route('patrimonio.bienes.edit', $bien) }}" class="action-button">Editar</a>
+            @can('bienes.editar')
+                <a data-crud href="{{ route('patrimonio.bienes.edit', $bien) }}" class="action-button">Editar</a>
+            @endcan
             <a data-download data-filename="{{ $bien->folio_sicam }}.png" href="{{ route('patrimonio.bienes.qr', ['bien' => $bien, 'formato' => 'png']) }}" class="action-button action-button-primary">Descargar QR</a>
-            <form method="POST" action="{{ route('patrimonio.bienes.destroy', $bien) }}">@csrf @method('DELETE')<button class="action-button text-red-700">Eliminar</button></form>
+            @can('bienes.eliminar')
+                <form method="POST" action="{{ route('patrimonio.bienes.destroy', $bien) }}">@csrf @method('DELETE')<button class="action-button text-red-700">Eliminar</button></form>
+            @endcan
         </div>
     </header>
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">

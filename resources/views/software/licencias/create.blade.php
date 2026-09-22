@@ -60,7 +60,9 @@
                                 </select>
                                 @error('proveedor_id')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror
                             </label>
-                            @include('software.proveedores.includes.modal')
+                            @can('proveedores.crear')
+                                @include('software.proveedores.includes.modal')
+                            @endcan
                         </div>
                     </div>
                     <label class="mt-4 block"><span class="form-label">Uso o propósito</span>

@@ -73,6 +73,7 @@
 
             <div class="flex flex-wrap items-center gap-2">
 
+                @can('sistemas.editar')
                 <a
                     href="{{ route('software.sistemas.edit', $sistema) }}"
                     class="action-button"
@@ -94,6 +95,7 @@
 
                     Editar sistema
                 </a>
+                @endcan
 
             </div>
 
@@ -776,12 +778,14 @@
 
                     <div class="mt-4 space-y-2">
 
+                        @can('sistemas.editar')
                         <a
                             href="{{ route('software.sistemas.edit', $sistema) }}"
                             class="action-button action-button-primary flex w-full justify-center"
                         >
                             Editar sistema
                         </a>
+                        @endcan
 
 
                         <a

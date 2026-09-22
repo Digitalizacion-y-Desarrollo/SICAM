@@ -22,9 +22,25 @@
             </label>
 
             <label class="block">
+                <span class="form-label">Razón social</span>
+                <input type="text" class="form-control" data-proveedor-campo="razon_social" maxlength="191">
+            </label>
+
+            <label class="block">
+                <span class="form-label">RFC</span>
+                <input type="text" class="form-control uppercase" data-proveedor-campo="rfc" maxlength="20">
+            </label>
+
+            <label class="block sm:col-span-2">
                 <span class="form-label">Sitio web</span>
                 <input type="url" class="form-control" data-proveedor-campo="sitio_web" maxlength="2048"
-                    placeholder="https://www.platzi.com" autocomplete="url">
+                    placeholder="https://www.proveedor.com" autocomplete="url">
+            </label>
+
+            <label class="block sm:col-span-2">
+                <span class="form-label">Persona de contacto</span>
+                <input type="text" class="form-control" data-proveedor-campo="contacto_nombre" maxlength="191"
+                    autocomplete="name">
             </label>
 
             <label class="block">
@@ -33,10 +49,25 @@
                     placeholder="soporte@proveedor.com" autocomplete="email">
             </label>
 
+            <label class="block">
+                <span class="form-label">Teléfono de contacto</span>
+                <input type="text" class="form-control" data-proveedor-campo="contacto_telefono" maxlength="30"
+                    autocomplete="tel">
+            </label>
+
+            <label class="flex items-start gap-3 rounded-lg border border-line bg-surface-alt p-3 sm:col-span-2">
+                <input type="checkbox" value="1" checked data-proveedor-campo="activo"
+                    class="mt-0.5 size-4 rounded border-line text-brand focus:ring-brand">
+                <span>
+                    <span class="block text-sm font-semibold text-ink">Proveedor activo</span>
+                    <span class="mt-1 block text-xs text-muted">Estará disponible para seleccionarlo en las licencias.</span>
+                </span>
+            </label>
+
             <label class="block sm:col-span-2">
-                <span class="form-label">Nota adicional</span>
+                <span class="form-label">Observaciones</span>
                 <textarea class="form-control h-auto min-h-24 p-3" rows="3" maxlength="5000"
-                    data-proveedor-campo="observaciones" placeholder="Ej. Plataforma utilizada para capacitación del personal"></textarea>
+                    data-proveedor-campo="observaciones" placeholder="Condiciones o información relevante"></textarea>
             </label>
 
             <p class="text-sm text-red-700 sm:col-span-2" role="alert" data-proveedor-error hidden></p>
@@ -109,9 +140,11 @@
                     try {
                         const data = new FormData();
                         inputs.forEach(function(input) {
-                            data.set(input.dataset.proveedorCampo, input.value.trim());
+                            const value = input.type === 'checkbox'
+                                ? (input.checked ? '1' : '0')
+                                : input.value.trim();
+                            data.set(input.dataset.proveedorCampo, value);
                         });
-                        data.set('activo', '1');
                         data.set('_token', document.querySelector('meta[name="csrf-token"]')?.content || '');
 
                         const response = await fetch(container.dataset.url, {
@@ -141,14 +174,23 @@
                         });
 
                         inputs.forEach(function(input) {
-                            input.value = '';
+                            if (input.type === 'checkbox') input.checked = true;
+                            else input.value = '';
                         });
                         hideModal();
-                        result.textContent = provider.nombre + ' se registró y quedó seleccionado.';
 
                         if (container.hasAttribute('data-proveedor-recargar')) {
+                            await window.Swal.fire({
+                                icon: 'success',
+                                title: 'Proveedor registrado',
+                                text: provider.nombre + ' se registró correctamente.',
+                                confirmButtonColor: '#601633',
+                            });
                             window.location.reload();
+                            return;
                         }
+
+                        result.textContent = provider.nombre + ' se registró y quedó seleccionado.';
                     } catch (exception) {
                         error.textContent = exception.message;
                         error.hidden = false;

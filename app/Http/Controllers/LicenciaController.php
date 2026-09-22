@@ -10,6 +10,7 @@ use App\Services\DepartamentosAccesos;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 class LicenciaController extends Controller
 {
@@ -21,7 +22,7 @@ class LicenciaController extends Controller
             ->pluck('total', 'estado');
         $total = $conteosEstado->sum();
 
-        $estadoResumen = collect(Licencia::ESTADOS)->map(fn ($etiqueta, $estado) => [
+        $estadoResumen = collect(Licencia::ESTADOS)->map(fn($etiqueta, $estado) => [
             'estado' => $estado,
             'etiqueta' => $etiqueta,
             'total' => $conteosEstado->get($estado, 0),
@@ -70,15 +71,15 @@ class LicenciaController extends Controller
 
         $licencias = Licencia::query()
             ->with(['proveedor', 'responsable'])
-            ->when($filtros['buscar'] ?? null, fn ($query, $buscar) => $query->where(
-                fn ($query) => $query
+            ->when($filtros['buscar'] ?? null, fn($query, $buscar) => $query->where(
+                fn($query) => $query
                     ->where('nombre', 'like', "%{$buscar}%")
                     ->orWhere('clave', 'like', "%{$buscar}%")
                     ->orWhere('producto', 'like', "%{$buscar}%")
                     ->orWhere('fabricante', 'like', "%{$buscar}%")
             ))
-            ->when($filtros['estado'] ?? null, fn ($query, $estado) => $query->where('estado', $estado))
-            ->when($filtros['tipo'] ?? null, fn ($query, $tipo) => $query->where('tipo_licencia', $tipo))
+            ->when($filtros['estado'] ?? null, fn($query, $estado) => $query->where('estado', $estado))
+            ->when($filtros['tipo'] ?? null, fn($query, $tipo) => $query->where('tipo_licencia', $tipo))
             ->orderBy('nombre')
             ->orderBy('id')
             ->paginate(15)
@@ -106,6 +107,68 @@ class LicenciaController extends Controller
     {
         $data = $request->validated();
 
-        dd($data);
+        // Verificar que se subico correctamente
+        $licencia = Licencia::create($data);
+
+        if (! $licencia->wasRecentlyCreated) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'licencia' => 'No se pudo crear la licencia. Intenta nuevamente.',
+                ]);
+        }
+
+        return redirect(route('licencia.index'))->with('success', 'Licencia creada correctamente');
+    }
+
+    public function edit(
+        Licencia $licencia,
+        DepartamentosAccesos $departamentosAccesos
+    ): View {
+        $proveedores = Proveedor::query()
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get();
+
+        $responsables = Responsable::query()
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get();
+
+        $departamentos = $departamentosAccesos->listar();
+
+        return view('software.licencias.edit', compact(
+            'licencia',
+            'proveedores',
+            'responsables',
+            'departamentos'
+        ));
+    }
+
+    public function update(LicenciaRequest $request, Licencia $licencia)
+    {
+        $data = $request->validated();
+
+        if (! $licencia->update($data)) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'licencia' => 'No se pudo actualizar la licencia. Intenta nuevamente.',
+                ]);
+        }
+
+        return redirect(route('licencia.index'))
+            ->with('success', 'Licencia actualizada correctamente');
+    }
+
+
+    public function destroy(Licencia $licencia)
+    {
+        if (! $licencia->delete()) {
+            return back()->with('error', 'No se pudo eliminar la licencia. Intenta nuevamente.');
+        }
+
+        return redirect(route('licencia.index'))
+            ->with('success', 'Licencia eliminada correctamente');
     }
 }

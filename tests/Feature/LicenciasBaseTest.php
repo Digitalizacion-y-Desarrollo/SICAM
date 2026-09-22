@@ -10,6 +10,7 @@ use App\Models\LicenciaHistorial;
 use App\Models\LicenciaRenovacion;
 use App\Models\Proveedor;
 use App\Models\Responsable;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -22,6 +23,7 @@ class LicenciasBaseTest extends TestCase
     {
         parent::setUp();
         $this->withoutVite();
+        $this->actingAs(User::factory()->create());
     }
 
     public function test_license_module_tables_have_the_expected_structure(): void

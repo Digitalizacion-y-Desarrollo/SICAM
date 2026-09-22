@@ -34,9 +34,11 @@
             </div>
 
 
+            @can('sistemas.crear')
             <a href="{{ route('software.sistemas.create') }}" class="action-button action-button-primary" data-crud>
                 + Registrar sistema
             </a>
+            @endcan
 
         </div>
 
@@ -339,6 +341,7 @@
 
 
                                         {{-- EDITAR --}}
+                                        @can('sistemas.editar')
                                         <a class="font-semibold text-blue-600 hover:underline"
                                             href="{{ route('software.sistemas.edit', $sistema) }}" title="Editar Sistema"
                                             aria-label="Editar {{ $sistema->nombre }}">
@@ -352,9 +355,11 @@
                                             </svg>
 
                                         </a>
+                                        @endcan
 
 
                                         {{-- ELIMINAR --}}
+                                        @can('sistemas.eliminar')
                                         <form id="delete-sistema-{{ $sistema->id }}"
                                             action="{{ route('software.sistemas.destroy', $sistema) }}" method="POST"
                                             class="inline">
@@ -383,6 +388,7 @@
                                             </button>
 
                                         </form>
+                                        @endcan
 
                                     </div>
 
@@ -411,7 +417,7 @@
 
     <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 
     <script>
@@ -1139,30 +1145,6 @@
         }
     </script>
 
-
-    {{-- ========================================================= --}}
-    {{-- SWEET ALERT - OPERACIÓN EXITOSA --}}
-    {{-- ========================================================= --}}
-
-    @if (session('message'))
-        <script>
-            Swal.fire({
-
-                icon: 'success',
-
-                title: '¡Listo!',
-
-                text: @js(session('message')),
-
-                showConfirmButton: false,
-
-                timer: 2200,
-
-                timerProgressBar: true
-
-            });
-        </script>
-    @endif
 
 
 @endsection

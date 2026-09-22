@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class Licencia extends Model
 {
@@ -41,6 +42,8 @@ class Licencia extends Model
         'cancelada' => 'Cancelada',
     ];
 
+    public const DIAS_POR_VENCER = 30;
+
     protected $fillable = [
         'clave',
         'nombre',
@@ -68,6 +71,61 @@ class Licencia extends Model
         'proveedor_id',
         'observaciones',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Licencia $licencia): void {
+            if (
+                $licencia->tipo_licencia !== 'suscripcion'
+                || ! $licencia->fecha_vencimiento
+                || in_array($licencia->estado, ['suspendida', 'cancelada'], true)
+            ) {
+                return;
+            }
+
+            $licencia->estado = static::estadoSegunFecha($licencia->fecha_vencimiento);
+        });
+    }
+
+    public static function estadoSegunFecha(mixed $fechaVencimiento): string
+    {
+        $fecha = Carbon::parse($fechaVencimiento)->startOfDay();
+
+        if ($fecha->lt(today())) {
+            return 'vencida';
+        }
+
+        if ($fecha->lte(today()->addDays(static::DIAS_POR_VENCER))) {
+            return 'por_vencer';
+        }
+
+        return 'activa';
+    }
+
+    public static function sincronizarEstadosPorVencimiento(): void
+    {
+        $estadosManuales = ['suspendida', 'cancelada'];
+        $hoy = today()->toDateString();
+        $limite = today()->addDays(static::DIAS_POR_VENCER)->toDateString();
+
+        static::query()
+            ->where('tipo_licencia', 'suscripcion')
+            ->whereNotIn('estado', $estadosManuales)
+            ->whereDate('fecha_vencimiento', '<', $hoy)
+            ->update(['estado' => 'vencida']);
+
+        static::query()
+            ->where('tipo_licencia', 'suscripcion')
+            ->whereNotIn('estado', $estadosManuales)
+            ->whereBetween('fecha_vencimiento', [$hoy, $limite])
+            ->update(['estado' => 'por_vencer']);
+
+        static::query()
+            ->where('tipo_licencia', 'suscripcion')
+            ->whereNotIn('estado', $estadosManuales)
+            ->whereDate('fecha_vencimiento', '>', $limite)
+            ->update(['estado' => 'activa']);
+    }
 
     public static function siguienteClave(): string
     {

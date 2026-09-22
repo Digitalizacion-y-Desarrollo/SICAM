@@ -2,9 +2,18 @@
 
 namespace Tests;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    //
+    public function actingAs(Authenticatable $user, $guard = null)
+    {
+        parent::actingAs($user, $guard);
+
+        return $this->withSession([
+            'accesos.permissions' => ['*'],
+            'accesos.roles' => [],
+        ]);
+    }
 }

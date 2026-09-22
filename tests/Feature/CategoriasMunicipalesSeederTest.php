@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Categoria;
+use App\Models\User;
 use Database\Seeders\CategoriasMunicipalesSeeder;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -16,6 +17,7 @@ class CategoriasMunicipalesSeederTest extends TestCase
         DB::purge('sqlite');
         $this->artisan('migrate', ['--database' => 'sqlite', '--force' => true])->assertExitCode(0);
         $this->withoutVite();
+        $this->actingAs(User::factory()->create());
     }
 
     public function test_seeder_is_repeatable_and_preserves_custom_field_configuration(): void

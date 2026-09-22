@@ -29,6 +29,8 @@ return [
     ],
 
     'accesos' => [
+        'base_url' => env('ACCESOS_BASE_URL', 'https://accesos.digitalneza.com'),
+        'system_key' => env('ACCESOS_SYSTEM_KEY'),
         'departamentos_url' => env('ACCESOS_DEPARTAMENTOS_URL', 'https://accesos.digitalneza.com/api/departamentos'),
     ],
 

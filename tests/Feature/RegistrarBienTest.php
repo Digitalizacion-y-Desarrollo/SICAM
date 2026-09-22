@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Bien;
 use App\Models\Categoria;
 use App\Models\Responsable;
+use App\Models\User;
 use App\Services\RegistrarBien;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
@@ -22,6 +23,7 @@ class RegistrarBienTest extends TestCase
         $this->artisan('migrate', ['--database' => 'sqlite', '--force' => true])->assertExitCode(0);
         $this->withoutVite();
         Storage::fake('local');
+        $this->actingAs(User::factory()->create());
     }
 
     private function payload(array $overrides = []): array

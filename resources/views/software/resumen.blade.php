@@ -23,8 +23,12 @@
                 <p class="mt-1 text-sm text-muted">Seguimiento del inventario de sistemas, aplicaciones y servicios institucionales.</p>
             </div>
             <div class="flex flex-wrap gap-2">
+                @can('sistemas.ver')
                 <a href="{{ route('software.sistemas') }}" class="action-button">Ver sistemas</a>
+                @endcan
+                @can('sistemas.crear')
                 <a href="{{ route('software.sistemas.create') }}" class="action-button action-button-primary" data-crud>+ Registrar sistema</a>
+                @endcan
             </div>
         </header>
 
@@ -48,7 +52,9 @@
                 <img src="{{ asset('assets/icons/terminal-square.svg') }}" alt="" class="mx-auto size-10 opacity-70">
                 <h2 class="mt-3">Aún no hay sistemas registrados</h2>
                 <p class="mx-auto mt-2 max-w-md text-sm text-muted">Registra el primer sistema para visualizar sus estados, responsables y distribución por dependencia.</p>
-                <a href="{{ route('software.sistemas.create') }}" class="action-button action-button-primary mt-4" data-crud>Registrar sistema</a>
+                @can('sistemas.crear')
+                    <a href="{{ route('software.sistemas.create') }}" class="action-button action-button-primary mt-4" data-crud>Registrar sistema</a>
+                @endcan
             </section>
         @else
             <div class="grid gap-5 xl:grid-cols-5">

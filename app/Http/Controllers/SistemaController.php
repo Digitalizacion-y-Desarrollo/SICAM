@@ -97,7 +97,7 @@ class SistemaController extends Controller
 
         Sistema::create($data);
 
-        return redirect(route('software.sistemas'))->with('message', "Sistema creado correctamente");
+        return redirect(route('software.sistemas'))->with('success', "Sistema creado correctamente");
     }
 
 
@@ -116,7 +116,7 @@ class SistemaController extends Controller
 
         return redirect()
             ->route('software.sistemas')
-            ->with('message', 'Sistema actualizado correctamente');
+            ->with('success', 'Sistema actualizado correctamente');
     }
 
     public function show(Sistema $sistema, ObtenerBitacoraSistema $obtenerBitacoraSistema): View
@@ -133,6 +133,6 @@ class SistemaController extends Controller
 
         return redirect()
             ->route('software.sistemas')
-            ->with('message', 'Sistema actualizado correctamente');
+            ->with('success', 'Sistema actualizado correctamente');
     }
 }

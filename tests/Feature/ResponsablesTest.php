@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Responsable;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -14,6 +15,7 @@ class ResponsablesTest extends TestCase
         config(['database.default' => 'sqlite', 'database.connections.sqlite.database' => ':memory:']);
         DB::purge('sqlite');
         $this->artisan('migrate', ['--database' => 'sqlite', '--force' => true])->assertExitCode(0);
+        $this->actingAs(User::factory()->create());
     }
 
     public function test_responsible_can_be_registered_without_area(): void

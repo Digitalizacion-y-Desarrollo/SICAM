@@ -49,4 +49,31 @@ class ProveedorController extends Controller
 
         return back()->with('success', 'Proveedor registrado correctamente.');
     }
+
+    public function edit(Proveedor $proveedor): View
+    {
+        return view('software.proveedores.edit', compact('proveedor'));
+    }
+
+    public function update(StoreProveedorRequest $request, Proveedor $proveedor): RedirectResponse
+    {
+        if (! $proveedor->update($request->validated())) {
+            return back()
+                ->withInput()
+                ->with('error', 'No se pudo actualizar el proveedor. Intenta nuevamente.');
+        }
+
+        return redirect()->route('licencia.proveedores')
+            ->with('success', 'Proveedor actualizado correctamente.');
+    }
+
+    public function destroy(Proveedor $proveedor): RedirectResponse
+    {
+        if (! $proveedor->delete()) {
+            return back()->with('error', 'No se pudo eliminar el proveedor. Intenta nuevamente.');
+        }
+
+        return redirect()->route('licencia.proveedores')
+            ->with('success', 'Proveedor eliminado correctamente.');
+    }
 }

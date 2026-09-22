@@ -45,6 +45,7 @@ class SistemasTest extends TestCase
 
     public function test_software_summary_uses_live_system_metrics(): void
     {
+        $this->actingAs(User::factory()->create());
         app(GuardarSistema::class)->ejecutar($this->datos([
             'clave' => 'SIS-PROD',
             'nombre' => 'Portal ciudadano',

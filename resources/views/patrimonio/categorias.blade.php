@@ -7,6 +7,7 @@
                 <h1 class="text-2xl font-bold">Categorías de bienes</h1>
                 <p class="mt-1 text-sm text-muted">Configura los tipos de bienes patrimoniales y sus campos dinámicos</p>
             </div>
+            @can('categorias.crear')
             <details class="relative">
                 <summary class="action-button action-button-primary list-none cursor-pointer">+ Nueva categoría</summary>
                 <form method="POST" action="{{ route('patrimonio.categorias.store') }}"
@@ -22,6 +23,7 @@
                         class="action-button action-button-primary w-full justify-center">Guardar categoría</button>
                 </form>
             </details>
+            @endcan
         </div>
         <div class="mt-5 grid gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
             <aside class="form-card self-start">
@@ -59,7 +61,8 @@
                         </div><span
                             class="asset-status flex items-center {{ $seleccionada->activo ? 'asset-status-assigned' : 'asset-status-unassigned' }}">{{ $seleccionada->activo ? 'Categoría activa' : 'Inactiva' }}</span>
                     </div>
-                    <div class="mt-4 flex flex-wrap gap-3"><a data-crud class="action-button" href="{{ route('patrimonio.categorias.edit', $seleccionada) }}">Editar categoría</a><form method="POST" action="{{ route('patrimonio.categorias.destroy', $seleccionada) }}">@csrf @method('DELETE')<button class="action-button text-red-700">Eliminar categoría</button></form></div>
+                    <div class="mt-4 flex flex-wrap gap-3">@can('categorias.editar')<a data-crud class="action-button" href="{{ route('patrimonio.categorias.edit', $seleccionada) }}">Editar categoría</a>@endcan
+@can('categorias.eliminar')<form method="POST" action="{{ route('patrimonio.categorias.destroy', $seleccionada) }}">@csrf @method('DELETE')<button class="action-button text-red-700">Eliminar categoría</button></form>@endcan</div>
                     <div class="py-4">
                         <p class="text-[11px] font-semibold uppercase text-muted">Descripción</p>
                         <p class="mt-1 text-sm">{{ $seleccionada->descripcion ?: 'Sin descripción.' }}</p>
@@ -84,11 +87,13 @@
                                         <td>{{ str($campo->tipo)->headline() }}</td>
                                         <td>{{ $campo->requerido ? 'Sí' : 'No' }}</td>
                                         <td><div class="flex justify-end gap-3">
-                                            <a data-crud href="{{ route('patrimonio.campos.edit', $campo) }}" class="text-brand" title="Editar campo">@include('patrimonio.includes.action-icon', ['icon' => 'edit', 'label' => 'Editar campo'])</a>
+                                            @can('categorias.editar')<a data-crud href="{{ route('patrimonio.campos.edit', $campo) }}" class="text-brand" title="Editar campo">@include('patrimonio.includes.action-icon', ['icon' => 'edit', 'label' => 'Editar campo'])</a>@endcan
+                                            @can('categorias.eliminar')
                                             <form method="POST"
                                                 action="{{ route('patrimonio.categorias.campos.destroy', $campo) }}"
                                                 >@csrf @method('DELETE')<button class="text-red-500" title="Eliminar campo">@include('patrimonio.includes.action-icon', ['icon' => 'delete', 'label' => 'Eliminar campo'])</button>
                                             </form>
+                                            @endcan
                                         </div></td>
                                 </tr>@empty<tr>
                                         <td colspan="5" class="py-8 text-center text-muted">Esta categoría aún no tiene
@@ -98,6 +103,7 @@
                             </tbody>
                         </table>
                     </div>
+                    @can('categorias.crear')
                     <details class="mt-4">
                         <summary class="action-button list-none cursor-pointer text-brand">+ Agregar campo dinámico
                         </summary>
@@ -125,7 +131,9 @@
                             </fieldset><button
                                 class="action-button action-button-primary justify-center sm:col-span-3">Guardar
                                 campo</button></form>
-                </details>@else<div class="py-16 text-center text-sm text-muted">Crea o selecciona una categoría para
+                </details>
+                @endcan
+                @else<div class="py-16 text-center text-sm text-muted">Crea o selecciona una categoría para
                         configurarla.</div>
                 @endif
             </section>

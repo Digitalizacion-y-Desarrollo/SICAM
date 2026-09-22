@@ -11,8 +11,10 @@
                 <h1 class="text-2xl font-bold">Bienes Patrimoniales</h1>
                 <p class="mt-1 text-sm text-muted">Consulta los bienes patrimoniales registrados</p>
             </div>
+            @can('bienes.crear')
             <a data-crud href="{{ route('patrimonio.bienes.create') }}" class="action-button action-button-primary">+
                 Registrar bien</a>
+            @endcan
         </div>
         <details class="group mt-4 overflow-hidden rounded-xl border border-line bg-surface" @if($hayFiltros) open @endif>
             <summary class="flex cursor-pointer list-none items-center gap-3 px-4 py-3 text-sm font-semibold text-ink">
@@ -115,6 +117,7 @@
                                             </svg>
 
                                         </a>
+                                        @can('bienes.editar')
                                         <a data-crud class="text-brand" title="Editar Activo"
                                             href="{{ route('patrimonio.bienes.edit', $bien) }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -124,6 +127,7 @@
                                             </svg>
 
                                         </a>
+                                        @endcan
                                         <a data-download data-filename="{{ $bien->folio_sicam }}.png" class="text-brand" title="Descargar QR"
                                             href="{{ route('patrimonio.bienes.qr', ['bien' => $bien, 'formato' => 'png']) }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -135,6 +139,7 @@
                                             </svg>
 
                                         </a>
+                                        @can('bienes.eliminar')
                                         <form method="POST" action="{{ route('patrimonio.bienes.destroy', $bien) }}">@csrf
                                             @method('DELETE')<button class="text-red-700" title="Eliminar Activo">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -144,6 +149,7 @@
                                                 </svg>
                                             </button>
                                         </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

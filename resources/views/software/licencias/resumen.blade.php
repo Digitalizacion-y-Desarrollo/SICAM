@@ -17,7 +17,8 @@
     <div class="mx-auto max-w-[1440px] space-y-5 p-4 sm:p-6 lg:p-8">
         <header class="flex flex-wrap items-start justify-between gap-4">
             <div><p class="section-heading">Módulo de Licencias</p><h1 class="mt-1 text-2xl font-bold text-ink">Resumen</h1><p class="mt-1 text-sm text-muted">Panorama general del licenciamiento institucional y sus vencimientos.</p></div>
-            <div class="flex flex-wrap gap-2"><a href="{{ route('licencia.index') }}" class="action-button">Ver licencias</a><a href="{{ route('licencia.proveedores') }}" class="action-button">Ver proveedores</a><a href="{{ route('licencia.create') }}" class="action-button action-button-primary">+ Registrar licencia</a></div>
+            <div class="flex flex-wrap gap-2"><a href="{{ route('licencia.index') }}" class="action-button">Ver licencias</a>@can('proveedores.ver')<a href="{{ route('licencia.proveedores') }}" class="action-button">Ver proveedores</a>@endcan
+@can('licencias.crear')<a href="{{ route('licencia.create') }}" class="action-button action-button-primary">+ Registrar licencia</a>@endcan</div>
         </header>
 
         <section class="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-label="Indicadores de licencias">

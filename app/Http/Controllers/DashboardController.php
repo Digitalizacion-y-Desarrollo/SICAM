@@ -9,6 +9,7 @@ use App\Models\MovimientoBien;
 use App\Models\Responsable;
 use App\Models\Sistema;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -16,28 +17,28 @@ class DashboardController extends Controller
     public function __invoke(): View
     {
         $conteos = [
-            'bienes' => Bien::query()->count(),
-            'sistemas' => Sistema::query()->count(),
-            'licencias' => Licencia::query()->count(),
-            'unidades_licencia' => (int) Licencia::query()->sum('cantidad_adquirida'),
-            'responsables' => Responsable::query()->where('activo', true)->count(),
+            'bienes' => Gate::allows('bienes.ver') ? Bien::query()->count() : 0,
+            'sistemas' => Gate::allows('sistemas.ver') ? Sistema::query()->count() : 0,
+            'licencias' => Gate::allows('licencias.ver') ? Licencia::query()->count() : 0,
+            'unidades_licencia' => Gate::allows('licencias.ver') ? (int) Licencia::query()->sum('cantidad_adquirida') : 0,
+            'responsables' => Gate::allows('responsables.ver') ? Responsable::query()->where('activo', true)->count() : 0,
         ];
 
         $dependencias = $this->valoresAdministrativos('dependencia_id_accesos');
         $areas = $this->valoresAdministrativos('area_id_accesos');
 
         $alertas = [
-            'bienes_sin_resguardo' => Bien::query()
+            'bienes_sin_resguardo' => Gate::allows('bienes.ver') ? Bien::query()
                 ->whereDoesntHave('asignaciones', fn ($query) => $query->whereNull('fecha_fin'))
-                ->count(),
-            'licencias_por_vencer' => Licencia::query()
+                ->count() : 0,
+            'licencias_por_vencer' => Gate::allows('licencias.ver') ? Licencia::query()
                 ->whereNotIn('estado', ['cancelada', 'vencida'])
                 ->whereBetween('fecha_vencimiento', [today(), today()->addDays(30)])
-                ->count(),
-            'importaciones_con_errores' => Importacion::query()
+                ->count() : 0,
+            'importaciones_con_errores' => Gate::allows('importaciones.ver') ? Importacion::query()
                 ->get(['errores'])
                 ->filter(fn (Importacion $importacion) => filled($importacion->errores))
-                ->count(),
+                ->count() : 0,
         ];
 
         $metricas = [
@@ -59,10 +60,10 @@ class DashboardController extends Controller
     private function valoresAdministrativos(string $campo): Collection
     {
         return collect()
-            ->merge(Bien::query()->whereNotNull($campo)->pluck($campo))
-            ->merge(Sistema::query()->whereNotNull($campo)->pluck($campo))
-            ->merge(Licencia::query()->whereNotNull($campo)->pluck($campo))
-            ->merge(Responsable::query()->whereNotNull($campo)->pluck($campo))
+            ->when(Gate::allows('bienes.ver'), fn (Collection $valores) => $valores->merge(Bien::query()->whereNotNull($campo)->pluck($campo)))
+            ->when(Gate::allows('sistemas.ver'), fn (Collection $valores) => $valores->merge(Sistema::query()->whereNotNull($campo)->pluck($campo)))
+            ->when(Gate::allows('licencias.ver'), fn (Collection $valores) => $valores->merge(Licencia::query()->whereNotNull($campo)->pluck($campo)))
+            ->when(Gate::allows('responsables.ver'), fn (Collection $valores) => $valores->merge(Responsable::query()->whereNotNull($campo)->pluck($campo)))
             ->filter()
             ->unique()
             ->values();
@@ -70,7 +71,7 @@ class DashboardController extends Controller
 
     private function actividadReciente(): Collection
     {
-        $movimientos = MovimientoBien::query()
+        $movimientos = Gate::allows('movimientos.ver') ? MovimientoBien::query()
             ->with('bien')
             ->latest()
             ->take(5)
@@ -82,9 +83,9 @@ class DashboardController extends Controller
                 'fecha' => $movimiento->created_at,
                 'tono' => 'brand',
                 'url' => route('patrimonio.movimientos.show', $movimiento),
-            ]);
+            ]) : collect();
 
-        $sistemas = Sistema::query()
+        $sistemas = Gate::allows('sistemas.ver') ? Sistema::query()
             ->latest('updated_at')
             ->take(4)
             ->get()
@@ -95,9 +96,9 @@ class DashboardController extends Controller
                 'fecha' => $sistema->updated_at,
                 'tono' => 'gold',
                 'url' => route('software.sistemas.show', $sistema),
-            ]);
+            ]) : collect();
 
-        $licencias = Licencia::query()
+        $licencias = Gate::allows('licencias.ver') ? Licencia::query()
             ->latest('updated_at')
             ->take(4)
             ->get()
@@ -108,7 +109,7 @@ class DashboardController extends Controller
                 'fecha' => $licencia->updated_at,
                 'tono' => 'brand',
                 'url' => route('licencia.index', ['buscar' => $licencia->clave]),
-            ]);
+            ]) : collect();
 
         return $movimientos
             ->concat($sistemas)

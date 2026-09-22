@@ -16,7 +16,10 @@ class LicenciaRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['clave' => Licencia::siguienteClave()]);
+        $this->merge([
+            'clave' => Licencia::siguienteClave(),
+            'renovacion_automatica' => $this->boolean('renovacion_automatica'),
+        ]);
     }
 
     /** @return array<string, ValidationRule|array<mixed>|string> */

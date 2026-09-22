@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Categoria;
+use App\Models\User;
 use Tests\TestCase;
 
 class CategoriasTest extends TestCase
@@ -15,6 +16,7 @@ class CategoriasTest extends TestCase
         ]);
         $this->artisan('migrate', ['--database' => 'sqlite', '--force' => true])->assertExitCode(0);
         $this->withoutVite();
+        $this->actingAs(User::factory()->create());
 
         $categoria = Categoria::create(['nombre' => 'Equipo', 'slug' => 'equipo']);
 
@@ -41,6 +43,7 @@ class CategoriasTest extends TestCase
         ]);
         $this->artisan('migrate', ['--database' => 'sqlite', '--force' => true])->assertExitCode(0);
         $this->withoutVite();
+        $this->actingAs(User::factory()->create());
 
         $categoria = Categoria::create(['nombre' => 'Mobiliario', 'slug' => 'mobiliario']);
         $otraCategoria = Categoria::create(['nombre' => 'Equipo', 'slug' => 'equipo']);

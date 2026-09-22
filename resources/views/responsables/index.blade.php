@@ -7,6 +7,7 @@
                 <h1 class="text-2xl font-bold">Responsables</h1>
                 <p class="mt-1 text-sm text-muted">Personas que pueden tener bienes, sistemas o licencias bajo su responsabilidad</p>
             </div>
+            @can('responsables.crear')
             <details class="relative" @if ($errors->any()) open @endif>
                 <summary class="action-button action-button-primary list-none cursor-pointer">+ Nuevo responsable</summary>
                 <form method="POST" action="{{ route('patrimonio.responsables.store') }}"
@@ -38,6 +39,7 @@
                         class="action-button action-button-primary justify-center">Guardar responsable</button>
                 </form>
             </details>
+            @endcan
         </div>
         <form method="GET" class="mt-4 rounded-xl border border-line bg-surface p-3"><label
                 class="flex h-9 items-center gap-2 rounded-md border border-line bg-surface-alt px-3"><img
@@ -84,13 +86,18 @@
                                 </td>
                                 <td>
                                     <div class="flex justify-end gap-3">
-                                        <a data-crud class="text-brand" href="{{ route('patrimonio.responsables.show', $r) }}" title="Ver responsable">@include('patrimonio.includes.action-icon', ['icon' => 'view', 'label' => 'Ver responsable'])</a><a data-crud class="text-brand" href="{{ route('patrimonio.responsables.edit', $r) }}" title="Editar responsable">@include('patrimonio.includes.action-icon', ['icon' => 'edit', 'label' => 'Editar responsable'])</a>
+                                        <a data-crud class="text-brand" href="{{ route('patrimonio.responsables.show', $r) }}" title="Ver responsable">@include('patrimonio.includes.action-icon', ['icon' => 'view', 'label' => 'Ver responsable'])</a>
+                                        @can('responsables.editar')
+                                            <a data-crud class="text-brand" href="{{ route('patrimonio.responsables.edit', $r) }}" title="Editar responsable">@include('patrimonio.includes.action-icon', ['icon' => 'edit', 'label' => 'Editar responsable'])</a>
+                                        @endcan
+                                        @can('responsables.eliminar')
                                         @if (! $r->trashed())
                                             <form method="POST"
                                                 action="{{ route('patrimonio.responsables.destroy', $r) }}">@csrf
                                                 @method('DELETE')<button class="text-red-500" title="Eliminar responsable">@include('patrimonio.includes.action-icon', ['icon' => 'delete', 'label' => 'Eliminar responsable'])</button>
                                             </form>
                                         @endif
+                                        @endcan
                                     </div>
                                 </td>
                         </tr>@empty<tr>
