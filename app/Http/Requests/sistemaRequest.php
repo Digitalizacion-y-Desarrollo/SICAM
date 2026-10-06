@@ -63,6 +63,8 @@ class SistemaRequest extends FormRequest
                 'required',
                 Rule::in(array_keys(Sistema::ESTADOS)),
             ],
+            'fecha_estado' => ['nullable', 'date'],
+            'observaciones_estado' => ['nullable', 'string', 'max:2000'],
 
             'dependencia_id_accesos' => [
                 'required',

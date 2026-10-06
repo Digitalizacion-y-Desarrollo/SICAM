@@ -6,7 +6,7 @@
 @section('content')
     @php($dependenciasAccesos = collect($departamentos ?? [])->whereNull('parent_id'))
 
-    <form class="mx-auto max-w-[1440px] p-4 sm:p-6 lg:px-8 lg:py-7" action="{{ route('licencia.store') }}" method="POST" novalidate
+    <form data-modalidad-licencia class="mx-auto max-w-[1440px] p-4 sm:p-6 lg:px-8 lg:py-7" action="{{ route('licencia.store') }}" method="POST" novalidate
         aria-label="Formulario de registro de licencia">
         @csrf
 
@@ -99,6 +99,7 @@
                             @error('modalidad')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror
                             <span class="mt-1 block text-xs text-muted">Por persona, dispositivo, servidor o para toda la
                                 institución.</span></label>
+                        <label data-modalidad-otra hidden><span class="form-label">Especifica la otra forma de asignación <span class="text-red-700">*</span></span><input name="modalidad_otro" value="{{ old('modalidad_otro') }}" class="form-control" maxlength="191" placeholder="Describe cómo se asigna"><span class="mt-1 block text-xs text-muted">Indica la forma de asignación que no aparece en la lista.</span>@error('modalidad_otro')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror</label>
                         <label><span class="form-label">Número de accesos o licencias *</span><input type="number"
                                 name="cantidad_adquirida" value="{{ old('cantidad_adquirida', 1) }}" class="form-control"
                                 min="1" step="1" required>@error('cantidad_adquirida')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror</label>

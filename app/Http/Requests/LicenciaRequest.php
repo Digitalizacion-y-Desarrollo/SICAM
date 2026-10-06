@@ -19,6 +19,7 @@ class LicenciaRequest extends FormRequest
         $this->merge([
             'clave' => Licencia::siguienteClave(),
             'renovacion_automatica' => $this->boolean('renovacion_automatica'),
+            'modalidad_otro' => $this->input('modalidad') === 'otra' ? $this->input('modalidad_otro') : null,
         ]);
     }
 
@@ -47,6 +48,7 @@ class LicenciaRequest extends FormRequest
                 'string',
                 Rule::in(array_keys(Licencia::MODALIDADES)),
             ],
+            'modalidad_otro' => ['nullable', 'string', 'max:191', 'required_if:modalidad,otra'],
             'cantidad_adquirida' => ['required', 'integer', 'min:1'],
             'numero_licencia' => ['nullable', 'string', 'max:191'],
 
@@ -105,6 +107,7 @@ class LicenciaRequest extends FormRequest
             'descripcion' => 'uso o propósito',
             'tipo_licencia' => 'tipo de contratación',
             'modalidad' => 'forma de asignación',
+            'modalidad_otro' => 'otra forma de asignación',
             'cantidad_adquirida' => 'número de accesos o licencias',
             'numero_licencia' => 'cuenta, folio o número de licencia',
             'costo_unitario' => 'costo por acceso o licencia',

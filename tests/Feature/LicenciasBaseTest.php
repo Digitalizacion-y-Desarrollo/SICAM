@@ -34,7 +34,7 @@ class LicenciasBaseTest extends TestCase
         ]));
         $this->assertTrue(Schema::hasColumns('licencias', [
             'id', 'clave', 'nombre', 'descripcion', 'fabricante', 'producto', 'version',
-            'tipo_licencia', 'modalidad', 'cantidad_adquirida', 'numero_licencia',
+            'tipo_licencia', 'modalidad', 'modalidad_otro', 'cantidad_adquirida', 'numero_licencia',
             'clave_producto', 'numero_contrato', 'fecha_adquisicion', 'fecha_inicio',
             'fecha_vencimiento', 'renovacion_automatica', 'costo_unitario', 'costo_total',
             'moneda', 'estado', 'dependencia_id_accesos', 'area_id_accesos',

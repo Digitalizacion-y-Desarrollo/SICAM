@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sistema extends Model
 {
@@ -28,5 +29,10 @@ class Sistema extends Model
     public function responsableTecnico(): BelongsTo
     {
         return $this->belongsTo(Responsable::class, 'responsable_tecnico_id')->withTrashed();
+    }
+
+    public function historialEstados(): HasMany
+    {
+        return $this->hasMany(SistemaEstado::class)->orderByDesc('fecha_inicio')->orderByDesc('id');
     }
 }

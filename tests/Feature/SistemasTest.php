@@ -8,6 +8,7 @@ use App\Models\Sistema;
 use App\Models\User;
 use App\Services\DepartamentosAccesos;
 use App\Services\GuardarSistema;
+use App\Services\RegistrarEstadoSistema;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -41,6 +42,31 @@ class SistemasTest extends TestCase
         $software->id = 1;
         $this->view('software.sistemas.create', ['software' => $software])
             ->assertSee('action="'.route('software.sistemas.update', $software).'"', false);
+    }
+
+    public function test_state_history_closes_the_previous_period_when_status_changes(): void
+    {
+        $sistema = Sistema::create($this->datos(['estado' => 'pruebas']));
+        $historial = app(RegistrarEstadoSistema::class);
+        $historial->inicial($sistema, '2026-01-10');
+
+        $sistema->update(['estado' => 'mantenimiento']);
+        $historial->cambio($sistema, 'pruebas', '2026-02-01', 'Mantenimiento preventivo');
+
+        $periodos = $sistema->fresh()->historialEstados()->get()->keyBy('estado');
+
+        $this->assertSame('2026-01-10', $periodos['pruebas']->fecha_inicio->toDateString());
+        $this->assertSame('2026-02-01', $periodos['pruebas']->fecha_fin->toDateString());
+        $this->assertSame('2026-02-01', $periodos['mantenimiento']->fecha_inicio->toDateString());
+        $this->assertNull($periodos['mantenimiento']->fecha_fin);
+        $this->assertSame('Mantenimiento preventivo', $periodos['mantenimiento']->observaciones);
+
+        $this->actingAs(User::factory()->create())
+            ->get(route('software.sistemas.show', $sistema))
+            ->assertOk()
+            ->assertSee('Historial de estados')
+            ->assertSee('Mantenimiento preventivo')
+            ->assertSee('En mantenimiento');
     }
 
     public function test_software_summary_uses_live_system_metrics(): void

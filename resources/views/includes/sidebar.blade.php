@@ -25,11 +25,11 @@
             </div>
         @endcan
 
-        @canany(['patrimonio.ver', 'bienes.ver', 'asignaciones.ver', 'movimientos.ver', 'categorias.ver', 'importaciones.ver', 'software.ver', 'sistemas.ver', 'licencias.ver', 'proveedores.ver'])
+        @canany(['patrimonio.ver', 'bienes.ver', 'asignaciones.ver', 'movimientos.ver', 'categorias.ver', 'software.ver', 'sistemas.ver', 'licencias.ver', 'proveedores.ver'])
             <div>
                 <p class="menu-label">Módulos</p>
 
-                @canany(['patrimonio.ver', 'bienes.ver', 'asignaciones.ver', 'movimientos.ver', 'categorias.ver', 'importaciones.ver'])
+                @canany(['patrimonio.ver', 'bienes.ver', 'asignaciones.ver', 'movimientos.ver', 'categorias.ver'])
                     <div class="module-dropdown">
                         <button type="button"
                             class="menu-link menu-link-button group w-full {{ $patrimonioMenuActivo ? 'text-brand font-semibold' : '' }}"
@@ -56,9 +56,6 @@
                             @endcan
                             @can('categorias.ver')
                                 <a href="{{ route('patrimonio.categorias') }}" class="dropdown-link {{ request()->routeIs('patrimonio.categorias*', 'patrimonio.campos.*') ? 'dropdown-link-active' : '' }}">Categorías</a>
-                            @endcan
-                            @can('importaciones.ver')
-                                <a href="{{ route('patrimonio.importaciones.index') }}" class="dropdown-link {{ request()->routeIs('patrimonio.importaciones.*') ? 'dropdown-link-active' : '' }}">Importaciones</a>
                             @endcan
                         </div>
                     </div>

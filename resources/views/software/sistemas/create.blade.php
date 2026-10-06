@@ -53,6 +53,7 @@
                     <p class="mt-1 text-sm text-muted">
                         Datos principales para identificar el sistema o aplicación.
                     </p>
+                    <p class="form-required-legend mt-2 text-xs text-muted"><span class="font-semibold text-red-700">*</span> Solo los campos marcados con asterisco son obligatorios.</p>
 
                     <div class="mt-4 grid gap-4 sm:grid-cols-2">
 
@@ -60,7 +61,7 @@
                         <label class="block">
 
                             <span class="form-label">
-                                Clave *
+                                Clave <span class="text-red-700">*</span>@include('includes.help-tooltip', ['label' => 'Clave', 'message' => 'Nombre corto o siglas del sistema.'])
                             </span>
 
                             <input type="text" name="clave" value="{{ $fieldValue('clave') }}" class="form-control"
@@ -79,7 +80,7 @@
                         <label class="block">
 
                             <span class="form-label">
-                                Nombre del Aplicativo*
+                                Nombre del aplicativo <span class="text-red-700">*</span>@include('includes.help-tooltip', ['label' => 'Nombre del aplicativo', 'message' => 'Nombre completo del software.'])
                             </span>
 
                             <input type="text" name="nombre" value="{{ $fieldValue('nombre') }}" class="form-control"
@@ -98,7 +99,7 @@
                         <label class="block">
 
                             <span class="form-label">
-                                Tipo *
+                                Tipo <span class="text-red-700">*</span>
                             </span>
 
                             <select name="tipo" class="form-control" required>
@@ -126,7 +127,7 @@
                         <label class="block">
 
                             <span class="form-label">
-                                Origen *
+                                Origen <span class="text-red-700">*</span>@include('includes.help-tooltip', ['label' => 'Origen', 'message' => 'Indica si el software es interno o comercial.'])
                             </span>
 
                             <select name="origen" class="form-control" required>
@@ -157,7 +158,7 @@
                     <label class="mt-4 block">
 
                         <span class="form-label">
-                            Descripción *
+                            Descripción <span class="text-red-700">*</span>
                         </span>
 
                         <textarea name="descripcion" class="form-control h-auto min-h-28 p-3" rows="4" maxlength="5000"
@@ -387,7 +388,7 @@
                         <label class="block">
 
                             <span class="form-label">
-                                Dependencia *
+                                Dependencia <span class="text-red-700">*</span>
                             </span>
 
                             <input name="dependencia_id_accesos" id="software-dependencia" list="dependencias-accesos"
@@ -415,7 +416,7 @@
                         <label id="software-area-field" class="block" hidden>
 
                             <span class="form-label">
-                                Área *
+                                Área <span class="text-red-700">*</span>
                             </span>
 
                             <input name="area_id_accesos" id="software-area" list="areas-accesos"
@@ -447,7 +448,7 @@
                     <label class="mt-4 block">
 
                         <span class="form-label">
-                            Estado *
+                            Estado <span class="text-red-700">*</span>
                         </span>
 
                         <select name="estado" class="form-control" required>

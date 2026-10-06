@@ -14,25 +14,28 @@
         <div class="space-y-4">
             <section class="form-card">
                 <h2>Información general</h2>
-                <div class="mt-4 grid gap-4 sm:grid-cols-2">
-                    <label><span class="form-label">Categoría *</span><select name="categoria_id" id="bien-categoria" data-tour="Elige la categoría para cargar sus características. Los campos marcados con * son obligatorios." data-tour-title="Categoría" class="form-control" required>
-                        <option value="">Selecciona una categoría</option>
-                        @foreach ($categorias as $categoria)
-                            <option value="{{ $categoria->id }}" @selected((string) $fieldValue('categoria_id') === (string) $categoria->id)>{{ $categoria->padre ? $categoria->padre->nombre.' / ' : '' }}{{ $categoria->nombre }}</option>
-                        @endforeach
-                    </select></label>
-                    @include('patrimonio.includes.bien-input', ['name' => 'nombre', 'label' => 'Nombre o descripción', 'required' => true, 'max' => 180])
-                    <label><span class="form-label">No. patrimonial</span><input class="form-control bg-surface-alt text-muted" value="{{ $bien->numero_patrimonial ?? 'Se genera al guardar' }}" readonly><span class="mt-1 block text-[11px] text-muted">El folio SICAM y el número patrimonial son automáticos.</span></label>
-                    @include('patrimonio.includes.bien-input', ['name' => 'numero_serie', 'label' => 'No. de serie', 'max' => 120])
-                    @include('patrimonio.includes.bien-input', ['name' => 'marca', 'label' => 'Marca', 'max' => 100])
-                    @include('patrimonio.includes.bien-input', ['name' => 'modelo', 'label' => 'Modelo', 'max' => 100])
+                <div class="mt-4 grid gap-6 lg:grid-cols-5">
+                    <div class="grid gap-4 sm:grid-cols-2 lg:col-span-3">
+                        <label><span class="form-label">Categoría *</span><select name="categoria_id" id="bien-categoria" data-tour="Elige la categoría para cargar sus características. Los campos marcados con * son obligatorios." data-tour-title="Categoría" class="form-control" required>
+                            <option value="">Selecciona una categoría</option>
+                            @foreach ($categorias as $categoria)
+                                <option value="{{ $categoria->id }}" @selected((string) $fieldValue('categoria_id') === (string) $categoria->id)>{{ $categoria->padre ? $categoria->padre->nombre.' / ' : '' }}{{ $categoria->nombre }}</option>
+                            @endforeach
+                        </select></label>
+                        @include('patrimonio.includes.bien-input', ['name' => 'nombre', 'label' => 'Nombre o descripción', 'required' => true, 'max' => 180])
+                        <label class="sm:col-span-2"><span class="form-label">No. patrimonial</span><input class="form-control bg-surface-alt text-muted" value="{{ $bien->numero_patrimonial ?? 'Se genera al guardar' }}" readonly><span class="mt-1 block text-[11px] text-muted">El folio SICAM y el número patrimonial son automáticos.</span></label>
                 </div>
-                <label class="mt-4 block rounded-lg border border-dashed border-line p-4">
+                <div class="rounded-xl border-2 border-dashed border-brand/30 bg-surface-alt p-5 lg:col-span-2">
+                    <div class="flex items-start gap-3"><span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand/10 text-lg font-bold text-brand" aria-hidden="true">+</span><div><h3 class="text-sm font-bold text-ink">Fotografía del activo</h3><p class="mt-1 text-xs leading-5 text-muted">Agrega una imagen clara para facilitar su identificación.</p></div></div>
+                <label class="mt-5 block cursor-pointer rounded-lg border border-line bg-surface p-3 text-center text-sm font-semibold text-brand transition hover:border-brand focus-within:ring-2 focus-within:ring-brand focus-within:ring-offset-2">
                     <span class="form-label">Fotografía</span><span class="mb-3 block text-xs text-muted">Selecciona una imagen PNG o JPG de hasta 5 MB.</span>
-                    <input name="fotografia" id="bien-fotografia" type="file" accept="image/png,image/jpeg" class="block w-full min-w-0 text-xs">
+                    <input name="fotografia" id="bien-fotografia" type="file" accept="image/png,image/jpeg" class="sr-only">
                 </label>
+                <p class="mt-3 text-center text-xs text-muted">PNG o JPG, hasta 5 MB. Campo opcional.</p>
                 <p id="foto-error" class="mt-2 text-sm text-red-700" role="alert"></p>
-                <img id="foto-preview" alt="Vista previa de la fotografía del bien" class="mt-3 hidden max-h-48 rounded-lg object-contain">
+                <img id="foto-preview" alt="Vista previa de la fotografía del bien" class="mt-3 hidden max-h-56 w-full rounded-lg object-contain">
+                </div>
+                </div>
             </section>
             <section class="form-card">
                 <h2>Características del activo</h2>
@@ -102,7 +105,14 @@
                     <datalist id="areas-accesos"></datalist>
                     <span id="areas-accesos-ayuda" class="mt-1 block text-xs text-muted">Selecciona una dependencia para consultar sus áreas.</span>
                 </label>
-                @include('patrimonio.includes.bien-input', ['name' => 'ubicacion_fisica', 'label' => 'Ubicación física', 'max' => 191])
+                <label class="block">
+                    <div class="mb-1.5 flex items-center gap-2 text-xs font-semibold text-ink"><span>Ubicación física</span>
+                    <details class="group relative inline-block">
+                        <summary class="flex size-5 cursor-pointer list-none items-center justify-center rounded-full border border-brand text-xs font-bold text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand" aria-label="Ayuda sobre ubicación física">?</summary>
+                        <span role="tooltip" class="absolute bottom-7 left-0 z-10 hidden w-64 rounded-lg bg-ink p-3 text-xs font-normal leading-5 text-white shadow-lg group-open:block">Es la dirección del lugar donde se encuentra el activo. Este campo es opcional.</span>
+                    </details></div>
+                    <input name="ubicacion_fisica" type="text" value="{{ $fieldValue('ubicacion_fisica') }}" class="form-control" maxlength="191">
+                </label>
             </div></section>
             <section class="form-card"><h2>Estado inicial</h2>
                 <label class="mt-4 block"><span class="form-label">Estado *</span><select name="estado" id="bien-estado" class="form-control" required>

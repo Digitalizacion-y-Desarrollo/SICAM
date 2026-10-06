@@ -284,6 +284,24 @@
                 </section>
 
 
+                <section class="form-card">
+                    <div class="border-b border-line pb-4">
+                        <h2 class="text-base font-semibold text-ink">Historial de estados</h2>
+                        <p class="mt-1 text-sm text-muted">Periodos registrados para cada estado del sistema.</p>
+                    </div>
+                    <div class="mt-4 overflow-x-auto">
+                        <table class="data-table w-full min-w-[620px]">
+                            <thead><tr><th>Estado</th><th>Desde</th><th>Hasta</th><th>Observaciones</th></tr></thead>
+                            <tbody>@forelse($historialEstados as $periodo)
+                                <tr><td>{{ \App\Models\Sistema::ESTADOS[$periodo->estado] ?? $periodo->estado }}</td><td>{{ $periodo->fecha_inicio->format('d/m/Y') }}</td><td>{{ $periodo->fecha_fin?->format('d/m/Y') ?? 'Vigente' }}</td><td>{{ $periodo->observaciones ?: '—' }}</td></tr>
+                            @empty
+                                <tr><td colspan="4" class="py-6 text-center text-sm text-muted">Aún no hay periodos de estado registrados.</td></tr>
+                            @endforelse</tbody>
+                        </table>
+                    </div>
+                </section>
+
+
                 {{-- UBICACIÓN Y RESPONSABLES --}}
                 <div class="grid gap-5 lg:grid-cols-2">
 

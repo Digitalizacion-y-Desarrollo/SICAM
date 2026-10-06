@@ -5,7 +5,8 @@ import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
 window.Swal = Swal;
-// import './registro-bien';
+import './registro-bien';
+import './licencias-modalidad';
 // import './campos-categoria';
 import './departamentos-responsable';
 import './busqueda-global';
@@ -34,6 +35,48 @@ document.querySelectorAll('input[name="responsabilidad"]').forEach((radio) => ra
     document.querySelector('#responsable-persona')?.classList.toggle('hidden', radio.value !== 'persona' || !radio.checked);
     document.querySelector('#responsable-area')?.classList.toggle('hidden', radio.value !== 'area' || !radio.checked);
 }));
+
+const marcarCamposObligatorios = () => {
+    document.querySelectorAll('main form').forEach((form) => {
+        if (!form.querySelector('input[required], select[required], textarea[required]')) return;
+
+        if (!form.querySelector('.form-required-legend')) {
+            const legend = document.createElement('p');
+            legend.className = 'form-required-legend mb-4 text-xs text-muted';
+            legend.innerHTML = '<span class="font-semibold text-red-700">*</span> Solo los campos marcados con asterisco son obligatorios.';
+            const heading = form.querySelector('header, h1');
+            if (heading) heading.after(legend);
+            else form.prepend(legend);
+        }
+
+        form.querySelectorAll('label, legend, .form-label').forEach((label) => {
+            const walker = document.createTreeWalker(label, NodeFilter.SHOW_TEXT);
+            const textNodes = [];
+            let node;
+
+            while ((node = walker.nextNode())) {
+                if (node.parentElement?.closest('.text-red-700')) continue;
+                if (node.nodeValue?.includes('*')) textNodes.push(node);
+            }
+
+            textNodes.forEach((textNode) => {
+                const fragment = document.createDocumentFragment();
+                textNode.nodeValue.split('*').forEach((text, index) => {
+                    if (index) {
+                        const marker = document.createElement('span');
+                        marker.className = 'text-red-700';
+                        marker.textContent = '*';
+                        fragment.append(marker);
+                    }
+                    if (text) fragment.append(document.createTextNode(text));
+                });
+                textNode.replaceWith(fragment);
+            });
+        });
+    });
+};
+
+marcarCamposObligatorios();
 
 document.querySelectorAll('[data-dropdown-toggle]').forEach((toggle) => {
     toggle.addEventListener('click', () => {

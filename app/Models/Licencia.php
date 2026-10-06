@@ -53,6 +53,7 @@ class Licencia extends Model
         'version',
         'tipo_licencia',
         'modalidad',
+        'modalidad_otro',
         'cantidad_adquirida',
         'numero_licencia',
         'clave_producto',

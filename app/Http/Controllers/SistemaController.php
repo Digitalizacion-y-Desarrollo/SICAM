@@ -11,6 +11,8 @@ use App\Models\Sistema;
 use App\Services\DepartamentosAccesos;
 use App\Services\GuardarSistema;
 use App\Services\ObtenerBitacoraSistema;
+use App\Services\RegistrarEstadoSistema;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -91,11 +93,17 @@ class SistemaController extends Controller
         ]);
     }
 
-    public function store(sistemaRequest $request)
+    public function store(sistemaRequest $request, RegistrarEstadoSistema $registrarEstado)
     {
         $data = $request->validated();
+        $fechaEstado = $data['fecha_estado'] ?? null;
+        $observacionesEstado = $data['observaciones_estado'] ?? null;
+        unset($data['fecha_estado'], $data['observaciones_estado']);
 
-        Sistema::create($data);
+        DB::transaction(function () use ($data, $fechaEstado, $observacionesEstado, $registrarEstado): void {
+            $sistema = Sistema::create($data);
+            $registrarEstado->inicial($sistema, $fechaEstado, $observacionesEstado);
+        });
 
         return redirect(route('software.sistemas'))->with('success', "Sistema creado correctamente");
     }
@@ -108,11 +116,19 @@ class SistemaController extends Controller
         return view('software.sistemas.edit', compact('sistema', 'responsables'));
     }
 
-    public function update(SistemaRequest $request, Sistema $sistema)
+    public function update(SistemaRequest $request, Sistema $sistema, RegistrarEstadoSistema $registrarEstado)
     {
         $data = $request->validated();
+        $fechaEstado = $data['fecha_estado'] ?? null;
+        $observacionesEstado = $data['observaciones_estado'] ?? null;
+        unset($data['fecha_estado'], $data['observaciones_estado']);
 
-        $sistema->update($data);
+        DB::transaction(function () use ($sistema, $data, $fechaEstado, $observacionesEstado, $registrarEstado): void {
+            $sistema = Sistema::query()->lockForUpdate()->findOrFail($sistema->id);
+            $estadoAnterior = $sistema->estado;
+            $sistema->update($data);
+            $registrarEstado->cambio($sistema, $estadoAnterior, $fechaEstado, $observacionesEstado);
+        });
 
         return redirect()
             ->route('software.sistemas')
@@ -123,7 +139,9 @@ class SistemaController extends Controller
     {
         $historial = $obtenerBitacoraSistema->ejecutar($sistema);
 
-        return view('software.sistemas.show', compact('sistema', 'historial'));
+        $historialEstados = $sistema->historialEstados;
+
+        return view('software.sistemas.show', compact('sistema', 'historial', 'historialEstados'));
     }
 
 

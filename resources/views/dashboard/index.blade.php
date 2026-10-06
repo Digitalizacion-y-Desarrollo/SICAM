@@ -11,10 +11,6 @@
                 <h1 class="text-2xl font-bold tracking-tight sm:text-[26px]">Inicio</h1>
                 <p class="mt-1 text-xs text-muted sm:text-sm">Visión general del control de activos municipales</p>
             </div>
-            <p class="flex items-center gap-2 text-[11px] text-muted">
-                <span class="size-1.5 rounded-full bg-emerald-500"></span>
-                Actualizado: {{ $actualizadoEn->format('d/m/Y H:i') }}
-            </p>
         </header>
 
         <section id="accesos-rapidos"
@@ -56,16 +52,6 @@
                         <a href="{{ route('licencia.resumen') }}" class="module-action">Ver módulo →</a>
                     </article>
                 @endcan
-                <article class="module-card">
-                    <div class="flex items-start justify-between"><span class="icon-tile"><img
-                                src="{{ asset('assets/icons/network.svg') }}" alt="" class="size-6"></span><span
-                            class="status-pill">Próximamente</span></div>
-                    <div>
-                        <h3>Redes</h3>
-                        <p>Módulo pendiente</p>
-                    </div>
-                    <span class="module-disabled">No habilitado</span>
-                </article>
             </div>
         </section>
 
