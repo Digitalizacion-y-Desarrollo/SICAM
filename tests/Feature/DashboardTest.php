@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Bien;
+use App\Models\Categoria;
 use App\Models\Licencia;
 use App\Models\Responsable;
 use App\Models\Sistema;
@@ -67,5 +69,36 @@ class DashboardTest extends TestCase
             ->assertViewHas('metricas', fn (array $metricas) => $metricas['registros'] === 2
                 && $metricas['dependencias'] === 2
                 && $metricas['areas'] === 2);
+    }
+
+    public function test_dashboard_only_counts_records_from_the_users_department(): void
+    {
+        $this->withoutVite();
+        $categoria = Categoria::create(['nombre' => 'Cómputo', 'slug' => 'computo']);
+
+        foreach ([['Tecnologías', 'SICAM-TEC-001', 'PAT-TEC-001'], ['Obras Públicas', 'SICAM-OBR-001', 'PAT-OBR-001']] as [$dependencia, $folio, $patrimonial]) {
+            Bien::create([
+                'categoria_id' => $categoria->id,
+                'folio_sicam' => $folio,
+                'numero_patrimonial' => $patrimonial,
+                'nombre' => 'Equipo '.$dependencia,
+                'dependencia_id_accesos' => $dependencia,
+                'area_id_accesos' => 'Sistemas',
+            ]);
+        }
+
+        $this->actingAs(User::factory()->create())
+            ->withSession([
+                'accesos.permissions' => ['dashboard-sicam.ver', 'bienes.ver'],
+                'accesos.roles' => [],
+                'accesos.departamento' => [
+                    'departamento_padre' => ['nombre' => 'Tecnologías'],
+                    'departamento_hijo' => ['nombre' => 'Sistemas'],
+                ],
+            ])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertViewHas('conteos', fn (array $conteos) => $conteos['bienes'] === 1)
+            ->assertViewHas('metricas', fn (array $metricas) => $metricas['registros'] === 1);
     }
 }

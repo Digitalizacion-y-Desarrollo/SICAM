@@ -3,6 +3,8 @@
 @section('content')
 @php($fieldValue = fn ($key, $default = null) => old($key, data_get($defaults ?? [], $key, $default)))
 @php($dependenciasAccesos = collect($departamentos)->whereNull('parent_id'))
+@php($ubicacionUsuario = $ubicacionUsuario ?? ['dependencia' => null, 'area' => null])
+@php($esSuperusuario = $esSuperusuario ?? false)
 <form id="registro-bien" class="mx-auto max-w-[1440px] p-4 sm:p-6 lg:px-8 lg:py-7" action="{{ isset($bien) ? route('patrimonio.bienes.update', $bien) : route('patrimonio.bienes.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     @isset($bien) @method('PUT') @endisset
@@ -93,7 +95,8 @@
         <aside class="space-y-4">
             <section class="form-card"><h2>Ubicación administrativa</h2><div class="mt-4 space-y-4">
                 <label class="block"><span class="form-label">Dependencia *</span>
-                    <input name="dependencia_id_accesos" id="bien-dependencia" list="dependencias-accesos" value="{{ $fieldValue('dependencia_id_accesos') }}" class="form-control" maxlength="100" autocomplete="off" required>
+                    @if (! $esSuperusuario && filled($ubicacionUsuario['dependencia']))<input type="hidden" name="dependencia_id_accesos" value="{{ $ubicacionUsuario['dependencia'] }}">@endif
+                    <input name="dependencia_id_accesos" id="bien-dependencia" list="dependencias-accesos" value="{{ ! $esSuperusuario && filled($ubicacionUsuario['dependencia']) ? $ubicacionUsuario['dependencia'] : $fieldValue('dependencia_id_accesos') }}" class="form-control" maxlength="100" autocomplete="off" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))>
                     <datalist id="dependencias-accesos">
                         @foreach ($dependenciasAccesos as $dependencia)
                             <option value="{{ $dependencia['nombre'] }}"></option>
@@ -101,7 +104,8 @@
                     </datalist>
                 </label>
                 <label class="block"><span class="form-label">Área *</span>
-                    <input name="area_id_accesos" id="bien-area-accesos" list="areas-accesos" value="{{ $fieldValue('area_id_accesos') }}" class="form-control" maxlength="100" autocomplete="off">
+                    @if (! $esSuperusuario && filled($ubicacionUsuario['area']))<input type="hidden" name="area_id_accesos" value="{{ $ubicacionUsuario['area'] }}">@endif
+                    <input name="area_id_accesos" id="bien-area-accesos" list="areas-accesos" value="{{ ! $esSuperusuario && filled($ubicacionUsuario['area']) ? $ubicacionUsuario['area'] : $fieldValue('area_id_accesos') }}" class="form-control" maxlength="100" autocomplete="off" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))>
                     <datalist id="areas-accesos"></datalist>
                     <span id="areas-accesos-ayuda" class="mt-1 block text-xs text-muted">Selecciona una dependencia para consultar sus áreas.</span>
                 </label>

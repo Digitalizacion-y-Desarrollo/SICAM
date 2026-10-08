@@ -7,6 +7,7 @@ use App\Models\Licencia;
 use App\Models\Proveedor;
 use App\Models\Responsable;
 use App\Services\DepartamentosAccesos;
+use App\Support\AlcanceAreaUsuario;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -100,12 +101,12 @@ class LicenciaController extends Controller
         $departamentos = $departamentosAccesos->listar();
         $clave = Licencia::siguienteClave();
 
-        return view('software.licencias.create', compact('proveedores', 'responsables', 'departamentos', 'clave'));
+        return view('software.licencias.create', compact('proveedores', 'responsables', 'departamentos', 'clave') + $this->datosUbicacionFormulario());
     }
 
     public function store(LicenciaRequest $request)
     {
-        $data = $request->validated();
+        $data = $this->forzarUbicacionUsuario($request->validated());
 
         // Verificar que se subico correctamente
         $licencia = Licencia::create($data);
@@ -142,12 +143,12 @@ class LicenciaController extends Controller
             'proveedores',
             'responsables',
             'departamentos'
-        ));
+        ) + $this->datosUbicacionFormulario());
     }
 
     public function update(LicenciaRequest $request, Licencia $licencia)
     {
-        $data = $request->validated();
+        $data = $this->forzarUbicacionUsuario($request->validated());
 
         if (! $licencia->update($data)) {
             return back()
@@ -170,5 +171,22 @@ class LicenciaController extends Controller
 
         return redirect(route('licencia.index'))
             ->with('success', 'Licencia eliminada correctamente');
+    }
+
+    private function datosUbicacionFormulario(): array
+    {
+        return ['ubicacionUsuario' => AlcanceAreaUsuario::ubicacion(), 'esSuperusuario' => AlcanceAreaUsuario::esSuperusuario()];
+    }
+
+    private function forzarUbicacionUsuario(array $datos): array
+    {
+        if (AlcanceAreaUsuario::esSuperusuario()) {
+            return $datos;
+        }
+
+        return [...$datos, ...array_filter([
+            'dependencia_id_accesos' => AlcanceAreaUsuario::ubicacion()['dependencia'],
+            'area_id_accesos' => AlcanceAreaUsuario::ubicacion()['area'],
+        ])];
     }
 }

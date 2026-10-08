@@ -8,6 +8,8 @@
         $fieldValue = fn($key, $default = null) => old($key, data_get($software ?? [], $key, $default));
 
         $dependenciasAccesos = collect($departamentos ?? [])->whereNull('parent_id');
+        $ubicacionUsuario = $ubicacionUsuario ?? ['dependencia' => null, 'area' => null];
+        $esSuperusuario = $esSuperusuario ?? false;
     @endphp
 
     <form id="registro-software" class="mx-auto max-w-[1440px] p-4 sm:p-6 lg:px-8 lg:py-7" novalidate
@@ -391,9 +393,10 @@
                                 Dependencia <span class="text-red-700">*</span>
                             </span>
 
+                            @if (! $esSuperusuario && filled($ubicacionUsuario['dependencia']))<input type="hidden" name="dependencia_id_accesos" value="{{ $ubicacionUsuario['dependencia'] }}">@endif
                             <input name="dependencia_id_accesos" id="software-dependencia" list="dependencias-accesos"
-                                value="{{ $fieldValue('dependencia_id_accesos') }}" class="form-control" maxlength="100"
-                                autocomplete="off" required>
+                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['dependencia']) ? $ubicacionUsuario['dependencia'] : $fieldValue('dependencia_id_accesos') }}" class="form-control" maxlength="100"
+                                autocomplete="off" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))>
 
                             <datalist id="dependencias-accesos">
 
@@ -419,9 +422,10 @@
                                 Área <span class="text-red-700">*</span>
                             </span>
 
+                            @if (! $esSuperusuario && filled($ubicacionUsuario['area']))<input type="hidden" name="area_id_accesos" value="{{ $ubicacionUsuario['area'] }}">@endif
                             <input name="area_id_accesos" id="software-area" list="areas-accesos"
-                                value="{{ $fieldValue('area_id_accesos') }}" class="form-control" maxlength="100"
-                                autocomplete="off">
+                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['area']) ? $ubicacionUsuario['area'] : $fieldValue('area_id_accesos') }}" class="form-control" maxlength="100"
+                                autocomplete="off" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))>
 
                             <datalist id="areas-accesos"></datalist>
 

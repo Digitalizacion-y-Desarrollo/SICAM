@@ -5,6 +5,8 @@
 
 @section('content')
     @php($dependenciasAccesos = collect($departamentos ?? [])->whereNull('parent_id'))
+    @php($ubicacionUsuario = $ubicacionUsuario ?? ['dependencia' => null, 'area' => null])
+    @php($esSuperusuario = $esSuperusuario ?? false)
 
     <form data-modalidad-licencia class="mx-auto max-w-[1440px] p-4 sm:p-6 lg:px-8 lg:py-7" action="{{ route('licencia.update', $licencia) }}" method="POST"
         novalidate aria-label="Formulario de registro de licencia">
@@ -253,11 +255,11 @@
                     <p class="mt-1 text-xs text-muted">Quién administra o utiliza principalmente este acceso o software.
                     </p>
                     <div class="mt-4" style="display: grid; row-gap: 1.75rem;">
-                        <label class="block"><span class="form-label">Dependencia *</span><input
-                                name="dependencia_id_accesos" id="licencia-dependencia" list="licencia-dependencias"
-                                value="{{ old('dependencia_id_accesos', $licencia->dependencia_id_accesos) }}"
+                        <label class="block"><span class="form-label">Dependencia *</span>@if (! $esSuperusuario && filled($ubicacionUsuario['dependencia']))<input type="hidden" name="dependencia_id_accesos" value="{{ $ubicacionUsuario['dependencia'] }}">@endif<input
+                            name="dependencia_id_accesos" id="licencia-dependencia" list="licencia-dependencias"
+                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['dependencia']) ? $ubicacionUsuario['dependencia'] : old('dependencia_id_accesos', $licencia->dependencia_id_accesos) }}"
                                 class="form-control" maxlength="100" autocomplete="off"
-                                placeholder="Selecciona una dependencia" required><datalist id="licencia-dependencias">
+                                placeholder="Selecciona una dependencia" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))><datalist id="licencia-dependencias">
                                 @foreach ($dependenciasAccesos as $dependencia)
                                     <option value="{{ $dependencia['nombre'] }}"></option>
                                 @endforeach
@@ -267,10 +269,10 @@
                                     role="alert">{{ $message }}</span>
                             @enderror
                         </label>
-                        <label id="licencia-area-field" class="block" hidden><span class="form-label">Área</span><input
-                                name="area_id_accesos" id="licencia-area" list="licencia-areas"
-                                value="{{ old('area_id_accesos', $licencia->area_id_accesos) }}" class="form-control"
-                                maxlength="100" autocomplete="off"><datalist id="licencia-areas"></datalist>
+                        <label id="licencia-area-field" class="block" hidden><span class="form-label">Área</span>@if (! $esSuperusuario && filled($ubicacionUsuario['area']))<input type="hidden" name="area_id_accesos" value="{{ $ubicacionUsuario['area'] }}">@endif<input
+                            name="area_id_accesos" id="licencia-area" list="licencia-areas"
+                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['area']) ? $ubicacionUsuario['area'] : old('area_id_accesos', $licencia->area_id_accesos) }}" class="form-control"
+                                maxlength="100" autocomplete="off" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))><datalist id="licencia-areas"></datalist>
                             @error('area_id_accesos')
                                 <span class="mt-1 block text-xs font-medium text-red-600"
                                     role="alert">{{ $message }}</span>

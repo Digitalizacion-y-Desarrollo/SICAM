@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RestringePorAreaUsuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,6 +11,7 @@ use Illuminate\Support\Carbon;
 
 class Licencia extends Model
 {
+    use RestringePorAreaUsuario;
     protected $table = 'licencias';
 
     public const TIPOS = [

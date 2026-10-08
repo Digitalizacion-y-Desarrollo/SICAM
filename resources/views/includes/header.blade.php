@@ -18,7 +18,6 @@
                 <kbd class="hidden rounded border border-line bg-white px-1.5 py-0.5 font-sans text-[10px] text-muted sm:inline-flex">Ctrl K</kbd>
             </button>
         @endcan
-        <button type="button" class="relative rounded-lg p-2" aria-label="Notificaciones"><img src="{{ asset('assets/icons/bell-dot.svg') }}" alt="" class="size-5"></button>
         <div class="hidden text-right text-xs sm:block"><p class="font-semibold text-ink">{{ auth()->user()?->name ?? 'Sin sesión' }}</p><p class="text-[10px] text-muted">SICAM Municipal</p></div>
         <span class="grid size-8 place-items-center rounded-full bg-brand text-xs font-semibold text-white">{{ auth()->user() ? mb_substr(auth()->user()->name, 0, 1) : '—' }}</span>
         @auth

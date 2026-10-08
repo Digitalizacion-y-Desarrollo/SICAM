@@ -12,6 +12,7 @@ use App\Services\DepartamentosAccesos;
 use App\Services\GuardarSistema;
 use App\Services\ObtenerBitacoraSistema;
 use App\Services\RegistrarEstadoSistema;
+use App\Support\AlcanceAreaUsuario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -89,13 +90,14 @@ class SistemaController extends Controller
         return view('software.sistemas.create', [
             'categorias' => $categorias,
             'responsables' => $responsables,
-            'departamentos' => $departamentos
+            'departamentos' => $departamentos,
+            ...$this->datosUbicacionFormulario(),
         ]);
     }
 
     public function store(sistemaRequest $request, RegistrarEstadoSistema $registrarEstado)
     {
-        $data = $request->validated();
+        $data = $this->forzarUbicacionUsuario($request->validated());
         $fechaEstado = $data['fecha_estado'] ?? null;
         $observacionesEstado = $data['observaciones_estado'] ?? null;
         unset($data['fecha_estado'], $data['observaciones_estado']);
@@ -113,12 +115,12 @@ class SistemaController extends Controller
     {
 
         $responsables = Responsable::where('activo', true)->orderBy('nombre')->get();
-        return view('software.sistemas.edit', compact('sistema', 'responsables'));
+        return view('software.sistemas.edit', compact('sistema', 'responsables') + $this->datosUbicacionFormulario());
     }
 
     public function update(SistemaRequest $request, Sistema $sistema, RegistrarEstadoSistema $registrarEstado)
     {
-        $data = $request->validated();
+        $data = $this->forzarUbicacionUsuario($request->validated());
         $fechaEstado = $data['fecha_estado'] ?? null;
         $observacionesEstado = $data['observaciones_estado'] ?? null;
         unset($data['fecha_estado'], $data['observaciones_estado']);
@@ -152,5 +154,22 @@ class SistemaController extends Controller
         return redirect()
             ->route('software.sistemas')
             ->with('success', 'Sistema actualizado correctamente');
+    }
+
+    private function datosUbicacionFormulario(): array
+    {
+        return ['ubicacionUsuario' => AlcanceAreaUsuario::ubicacion(), 'esSuperusuario' => AlcanceAreaUsuario::esSuperusuario()];
+    }
+
+    private function forzarUbicacionUsuario(array $datos): array
+    {
+        if (AlcanceAreaUsuario::esSuperusuario()) {
+            return $datos;
+        }
+
+        return [...$datos, ...array_filter([
+            'dependencia_id_accesos' => AlcanceAreaUsuario::ubicacion()['dependencia'],
+            'area_id_accesos' => AlcanceAreaUsuario::ubicacion()['area'],
+        ])];
     }
 }

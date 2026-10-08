@@ -43,10 +43,12 @@
                         <option value="{{ $value }}" @selected(request('estado') === $value)>{{ $label }}</option>
                     @endforeach
                 </select></label>
-                <label><span class="form-label">Dependencia</span><select name="dependencia" class="form-control">
-                    <option value="">Todas</option>
+                <label><span class="form-label">Dependencia</span><select name="dependencia" class="form-control" @disabled(! $esSuperusuario)>
+                    @if ($esSuperusuario)
+                        <option value="">Todas</option>
+                    @endif
                     @foreach ($dependencias as $dependencia)
-                        <option value="{{ $dependencia }}" @selected(request('dependencia') === $dependencia)>{{ $dependencia }}</option>
+                        <option value="{{ $dependencia }}" @selected((string) $dependenciaFiltro === (string) $dependencia)>{{ $dependencia }}</option>
                     @endforeach
                 </select></label>
                 <label><span class="form-label">Área</span><select name="area" class="form-control">
@@ -89,6 +91,7 @@
                     </thead>
                     <tbody>
                         @forelse ($bienes as $bien)
+
                             <tr>
                                 <td class="font-semibold text-brand">{{ $bien->folio_sicam }}</td>
                                 <td>

@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RestringePorAreaUsuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sistema extends Model
 {
+    use RestringePorAreaUsuario;
     public const TIPOS = ['web' => 'Sistema web', 'escritorio' => 'Aplicación de escritorio', 'movil' => 'Aplicación móvil', 'api' => 'API', 'servicio' => 'Servicio', 'herramienta' => 'Herramienta interna', 'otro' => 'Otro'];
 
     public const ORIGENES = ['interno' => 'Desarrollo interno', 'proveedor' => 'Desarrollo por proveedor', 'libre' => 'Software libre', 'comercial' => 'Software comercial', 'otro' => 'Otro'];
