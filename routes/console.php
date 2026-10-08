@@ -13,3 +13,8 @@ Schedule::call(fn () => Licencia::sincronizarEstadosPorVencimiento())
     ->dailyAt('00:05')
     ->name('licencias:sincronizar-estados')
     ->withoutOverlapping();
+
+Schedule::command('accesos:sincronizar-departamentos')
+    ->hourly()
+    ->name('accesos:sincronizar-departamentos')
+    ->withoutOverlapping();
