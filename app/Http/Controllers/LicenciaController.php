@@ -71,7 +71,7 @@ class LicenciaController extends Controller
         ]);
 
         $licencias = Licencia::query()
-            ->with(['proveedor', 'responsable'])
+            ->with(['proveedor', 'responsable', 'dependencia', 'area'])
             ->when($filtros['buscar'] ?? null, fn($query, $buscar) => $query->where(
                 fn($query) => $query
                     ->where('nombre', 'like', "%{$buscar}%")

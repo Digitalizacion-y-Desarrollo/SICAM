@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', 'SICAM | Responsable')
 @section('content')
+@php($responsable->setAttribute('dependencia_id_accesos', $responsable->dependencia?->nombre))
+@php($responsable->setAttribute('area_id_accesos', $responsable->area?->nombre))
 <div class="mx-auto max-w-[1440px] space-y-5 p-4 sm:p-6 lg:p-8">
 <header class="flex flex-wrap justify-between gap-4"><div><h1 class="text-2xl font-bold">{{ $responsable->nombre_completo }}</h1><p class="mt-1 text-sm text-muted">{{ $responsable->cargo }} · {{ $responsable->activo ? 'Activo' : 'Inactivo' }}</p></div>@can('responsables.editar')<a data-crud class="action-button" href="{{ route('patrimonio.responsables.edit', $responsable) }}">Editar responsable</a>@endcan</header>
 <section class="form-card"><h2>Datos del responsable</h2><dl class="mt-4 grid gap-4 sm:grid-cols-2">@foreach(['numero_empleado' => 'Número de empleado', 'dependencia_id_accesos' => 'Dependencia', 'area_id_accesos' => 'Área', 'correo' => 'Correo', 'telefono' => 'Teléfono'] as $key => $label)<div><dt class="text-xs text-muted">{{ $label }}</dt><dd class="mt-1 text-sm">{{ $responsable->$key ?: 'No registrado' }}</dd></div>@endforeach</dl></section>

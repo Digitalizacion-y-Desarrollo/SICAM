@@ -15,7 +15,7 @@ class ResponsableController extends Controller
 {
     public function index(DepartamentosAccesos $departamentosAccesos): View
     {
-        $responsables = Responsable::query()->withCount(['asignaciones as bienes_asignados' => fn ($q) => $q->whereNull('fecha_fin')])
+        $responsables = Responsable::query()->with(['dependencia', 'area'])->withCount(['asignaciones as bienes_asignados' => fn ($q) => $q->whereNull('fecha_fin')])
             ->when(request('buscar'), fn ($q, $v) => $q->where(fn ($q) => $q->where('numero_empleado', 'like', "%{$v}%")->orWhere('nombre', 'like', "%{$v}%")->orWhere('apellido_paterno', 'like', "%{$v}%")->orWhere('cargo', 'like', "%{$v}%")))
             ->when(request()->filled('estado'), fn ($q) => $q->where('activo', request('estado') === 'activo'))
             ->latest()->paginate(10)->withQueryString();
@@ -66,6 +66,7 @@ class ResponsableController extends Controller
 
     public function show(Responsable $responsable): View
     {
+        $responsable->load(['dependencia', 'area']);
         $asignaciones = $responsable->asignaciones()->with('bien')->latest('id')->paginate(15);
 
         return view('responsables.show', compact('responsable', 'asignaciones'));

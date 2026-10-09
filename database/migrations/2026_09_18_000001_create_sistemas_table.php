@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('tipo', 30)->index();
             $table->string('origen', 30);
             $table->string('estado', 30)->index();
-            $table->string('dependencia_id_accesos', 100)->index();
-            $table->string('area_id_accesos', 100)->nullable();
+            $table->unsignedBigInteger('dependencia_id_accesos')->index();
+            $table->unsignedBigInteger('area_id_accesos')->nullable();
             $table->foreignId('responsable_funcional_id')->nullable()->constrained('responsables')->restrictOnDelete();
             $table->foreignId('responsable_tecnico_id')->nullable()->constrained('responsables')->restrictOnDelete();
             $table->string('url_produccion', 2048)->nullable();

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Bien;
 use App\Models\Categoria;
+use App\Models\DepartamentoAcceso;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -66,6 +67,13 @@ class FiltroBienesPorDepartamentoTest extends TestCase
 
     private function sesion(array $roles): array
     {
+        DepartamentoAcceso::query()->firstOrCreate([
+            'id' => 21,
+        ], [
+            'nombre' => Bien::where('folio_sicam', 'SICAM-TEC-001')->value('dependencia_id_accesos'),
+            'activo' => true,
+        ]);
+
         return [
             'accesos.permissions' => ['bienes.ver'],
             'accesos.roles' => $roles,

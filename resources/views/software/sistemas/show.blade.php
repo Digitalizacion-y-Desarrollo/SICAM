@@ -5,6 +5,8 @@
 @section('breadcrumb', 'Software / Sistemas / Detalle')
 
 @section('content')
+@php($sistema->setAttribute('dependencia_id_accesos', $sistema->dependencia?->nombre))
+@php($sistema->setAttribute('area_id_accesos', $sistema->area?->nombre))
 
     <div class="mx-auto max-w-[1440px] space-y-5 p-4 sm:p-6 lg:p-8">
 

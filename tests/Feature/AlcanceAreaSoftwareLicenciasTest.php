@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\DepartamentoAcceso;
 use App\Models\Licencia;
 use App\Models\Sistema;
 use App\Models\User;
@@ -94,6 +95,8 @@ class AlcanceAreaSoftwareLicenciasTest extends TestCase
 
     private function sesion(array $roles): array
     {
+        DepartamentoAcceso::query()->firstOrCreate(['id' => 2], ['nombre' => 'Sistemas', 'activo' => true]);
+
         return [
             'accesos.permissions' => ['sistemas.ver', 'licencias.ver'],
             'accesos.roles' => $roles,

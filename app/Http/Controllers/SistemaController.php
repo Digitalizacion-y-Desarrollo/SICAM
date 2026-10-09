@@ -36,11 +36,12 @@ class SistemaController extends Controller
             'porcentaje' => $total ? (int) round(($conteosEstado->get($estado, 0) / $total) * 100) : 0,
         ])->values();
         $recientes = Sistema::query()
-            ->with(['responsableFuncional', 'responsableTecnico'])
+            ->with(['responsableFuncional', 'responsableTecnico', 'dependencia', 'area'])
             ->latest('updated_at')
             ->take(5)
             ->get();
         $porDependencia = Sistema::query()
+            ->with('dependencia')
             ->selectRaw('dependencia_id_accesos, COUNT(*) as total')
             ->groupBy('dependencia_id_accesos')
             ->orderByDesc('total')
@@ -68,7 +69,7 @@ class SistemaController extends Controller
             'tipo' => ['nullable', Rule::in(array_keys(Sistema::TIPOS))],
             'dependencia' => ['nullable', 'string', 'max:100'],
         ]);
-        $sistemas = Sistema::query()->with(['responsableFuncional', 'responsableTecnico'])
+        $sistemas = Sistema::query()->with(['responsableFuncional', 'responsableTecnico', 'dependencia', 'area'])
             ->when($filtros['buscar'] ?? null, fn($q, $v) => $q->where(fn($q) => $q->where('nombre', 'like', "%{$v}%")->orWhere('clave', 'like', "%{$v}%")))
             ->when($filtros['estado'] ?? null, fn($q, $v) => $q->where('estado', $v))
             ->when($filtros['tipo'] ?? null, fn($q, $v) => $q->where('tipo', $v))
@@ -139,6 +140,7 @@ class SistemaController extends Controller
 
     public function show(Sistema $sistema, ObtenerBitacoraSistema $obtenerBitacoraSistema): View
     {
+        $sistema->load(['dependencia', 'area']);
         $historial = $obtenerBitacoraSistema->ejecutar($sistema);
 
         $historialEstados = $sistema->historialEstados;

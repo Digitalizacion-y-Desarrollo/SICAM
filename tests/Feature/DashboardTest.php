@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Bien;
 use App\Models\Categoria;
+use App\Models\DepartamentoAcceso;
 use App\Models\Licencia;
 use App\Models\Responsable;
 use App\Models\Sistema;
@@ -73,6 +74,8 @@ class DashboardTest extends TestCase
 
     public function test_dashboard_only_counts_records_from_the_users_department(): void
     {
+        DepartamentoAcceso::create(['id' => 1, 'nombre' => 'Tecnologias', 'activo' => true]);
+        DepartamentoAcceso::create(['id' => 2, 'nombre' => 'Sistemas', 'parent_id' => 1, 'activo' => true]);
         $this->withoutVite();
         $categoria = Categoria::create(['nombre' => 'Cómputo', 'slug' => 'computo']);
 
@@ -87,13 +90,17 @@ class DashboardTest extends TestCase
             ]);
         }
 
+        DepartamentoAcceso::whereKey(1)->update([
+            'nombre' => Bien::where('folio_sicam', 'SICAM-TEC-001')->value('dependencia_id_accesos'),
+        ]);
+
         $this->actingAs(User::factory()->create())
             ->withSession([
                 'accesos.permissions' => ['dashboard-sicam.ver', 'bienes.ver'],
                 'accesos.roles' => [],
                 'accesos.departamento' => [
-                    'departamento_padre' => ['nombre' => 'Tecnologías'],
-                    'departamento_hijo' => ['nombre' => 'Sistemas'],
+                    'departamento_padre' => ['id' => 1, 'nombre' => 'Nombre remoto no confiable'],
+                    'departamento_hijo' => ['id' => 2, 'nombre' => 'Nombre remoto no confiable'],
                 ],
             ])
             ->get(route('dashboard'))

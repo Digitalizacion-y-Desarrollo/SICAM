@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('responsable_id')->nullable()->constrained('responsables')->nullOnDelete();
             $table->foreignId('activo_id')->nullable()->constrained('bienes')->nullOnDelete();
             $table->string('usuario_id_accesos', 100)->nullable();
-            $table->string('dependencia_id_accesos', 100)->nullable();
-            $table->string('area_id_accesos', 100)->nullable();
+            $table->unsignedBigInteger('dependencia_id_accesos')->nullable();
+            $table->unsignedBigInteger('area_id_accesos')->nullable();
             $table->date('fecha_asignacion')->nullable();
             $table->date('fecha_retiro')->nullable();
             $table->string('estado', 30)->default('activa');

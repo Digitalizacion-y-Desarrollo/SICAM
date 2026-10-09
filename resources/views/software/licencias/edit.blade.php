@@ -7,6 +7,9 @@
     @php($dependenciasAccesos = collect($departamentos ?? [])->whereNull('parent_id'))
     @php($ubicacionUsuario = $ubicacionUsuario ?? ['dependencia' => null, 'area' => null])
     @php($esSuperusuario = $esSuperusuario ?? false)
+    @php($departamentoUser = ! $esSuperusuario ? session('accesos.departamento.departamento_padre.id') : null)
+    @php($areaUser = ! $esSuperusuario ? session('accesos.departamento.departamento_hijo.id') : null)
+    @php($ubicacionUsuario = ['dependencia' => $departamentoUser, 'area' => $areaUser])
 
     <form data-modalidad-licencia class="mx-auto max-w-[1440px] p-4 sm:p-6 lg:px-8 lg:py-7" action="{{ route('licencia.update', $licencia) }}" method="POST"
         novalidate aria-label="Formulario de registro de licencia">
@@ -261,7 +264,7 @@
                                 class="form-control" maxlength="100" autocomplete="off"
                                 placeholder="Selecciona una dependencia" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))><datalist id="licencia-dependencias">
                                 @foreach ($dependenciasAccesos as $dependencia)
-                                    <option value="{{ $dependencia['nombre'] }}"></option>
+                                    <option value="{{ $dependencia['id'] }}" label="{{ $dependencia['nombre'] }}"></option>
                                 @endforeach
                             </datalist>
                             @error('dependencia_id_accesos')
@@ -373,13 +376,13 @@
 
             const departamentos = JSON.parse(data.textContent);
             const actualizarAreas = function(limpiar = false) {
-                const padre = departamentos.find((item) => item.parent_id === null && item.nombre ===
+                const padre = departamentos.find((item) => item.parent_id === null && String(item.id) ===
                     dependencia.value.trim());
                 const disponibles = padre ? departamentos.filter((item) => String(item.parent_id) === String(
                     padre.id)) : [];
-                areas.replaceChildren(...disponibles.map((item) => new Option('', item.nombre)));
+                areas.replaceChildren(...disponibles.map((item) => new Option(item.nombre, item.id)));
                 areaField.hidden = disponibles.length === 0;
-                if (limpiar && !disponibles.some((item) => item.nombre === area.value)) area.value = '';
+                if (limpiar && !disponibles.some((item) => String(item.id) === area.value)) area.value = '';
             };
 
             dependencia.addEventListener('input', () => actualizarAreas(true));

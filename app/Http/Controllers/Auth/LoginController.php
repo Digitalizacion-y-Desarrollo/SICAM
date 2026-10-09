@@ -16,6 +16,7 @@ class LoginController extends Controller
 {
     public function create(): View|RedirectResponse
     {
+
         if (Auth::check()) {
             return redirect()->route(PermisosAccesos::rutaInicial());
         }
@@ -25,6 +26,7 @@ class LoginController extends Controller
 
     public function store(Request $request, AutenticacionAccesos $accesos): RedirectResponse
     {
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],

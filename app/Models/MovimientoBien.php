@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RestringePorDepartamentoDelBien;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MovimientoBien extends Model
 {
+    use RestringePorDepartamentoDelBien;
     protected $table = 'movimientos_bien';
 
     protected $guarded = [];

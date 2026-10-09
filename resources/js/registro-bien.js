@@ -21,8 +21,8 @@ if (form) {
     const newResponsible = form.querySelector('#bien-nuevo-responsable');
     const responsible = form.querySelector('#bien-responsable');
     const state = form.querySelector('#bien-estado');
-    const dependency = form.elements.namedItem('dependencia_id_accesos');
-    const area = form.elements.namedItem('area_id_accesos');
+    const dependency = form.querySelector('[name="dependencia_id_accesos"]');
+    const area = form.querySelector('[name="area_id_accesos"]');
     const departmentsData = document.querySelector('#departamentos-accesos-data');
     const departments = departmentsData ? JSON.parse(departmentsData.textContent) : [];
     const dependencies = departments.filter((department) => department.parent_id === null);
@@ -30,18 +30,22 @@ if (form) {
     const areasHelp = form.querySelector('#areas-accesos-ayuda');
 
     const updateAreas = (preserveValue = false) => {
-        const selectedDependency = dependencies.find((department) => department.nombre === dependency.value.trim());
+        if (!areasList) return;
+
+        const selectedDependency = dependencies.find((department) => String(department.id) === dependency.value.trim());
         const areas = selectedDependency
             ? departments.filter((department) => department.parent_id === selectedDependency.id)
             : [];
-        const currentAreaIsValid = areas.some((department) => department.nombre === area.value.trim());
+        const currentAreaIsValid = areas.some((department) => String(department.id) === area.value.trim());
 
         if (!preserveValue && !currentAreaIsValid) area.value = '';
         areasList.replaceChildren(...areas.map((department) => {
             const option = document.createElement('option');
-            option.value = department.nombre;
+            option.value = department.id;
+            option.textContent = department.nombre;
             return option;
         }));
+        areasList.value = area.value;
         area.disabled = dependencies.length > 0 && (!selectedDependency || !areas.length);
         areasHelp.textContent = areas.length
             ? `${areas.length} ${areas.length === 1 ? 'área disponible' : 'áreas disponibles'} para la dependencia seleccionada.`
@@ -80,6 +84,10 @@ if (form) {
     form.querySelectorAll('[name="responsabilidad"]').forEach((radio) => radio.addEventListener('change', updateResponsibility));
     createResponsible.addEventListener('change', updateResponsibility);
     dependency.addEventListener('input', () => {
+        updateAreas();
+        filterResponsible();
+    });
+    dependency.addEventListener('change', () => {
         updateAreas();
         filterResponsible();
     });

@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\DepartamentoAcceso;
 use Illuminate\Database\Eloquent\Builder;
 
 final class AlcanceAreaUsuario
@@ -68,9 +69,43 @@ final class AlcanceAreaUsuario
     {
         $departamento = session('accesos.departamento', []);
 
+        $dependenciaId = data_get($departamento, 'departamento_padre.id');
+        $areaId = data_get($departamento, 'departamento_hijo.id');
+        $ids = collect([$dependenciaId, $areaId])
+            ->filter(fn ($id) => filled($id))
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return ['dependencia' => null, 'area' => null];
+        }
+
+        $departamentos = DepartamentoAcceso::query()
+            ->where('activo', true)
+            ->whereIn('id', $ids)
+            ->get()
+            ->keyBy('id');
+
+        $dependencia = filled($dependenciaId) ? $departamentos->get((int) $dependenciaId) : null;
+        $area = filled($areaId) ? $departamentos->get((int) $areaId) : null;
+
+        // Algunos perfiles de Accesos sólo incluyen el área. En ese caso el
+        // alcance sigue siendo la dependencia padre de dicha área.
+        if (! $dependencia && $area?->parent_id) {
+            $dependencia = DepartamentoAcceso::query()
+                ->whereKey($area->parent_id)
+                ->where('activo', true)
+                ->first();
+        }
+
+        if ($dependencia && $area && $area->parent_id !== $dependencia->id) {
+            $area = null;
+        }
+
         return [
-            'dependencia' => data_get($departamento, 'departamento_padre.nombre'),
-            'area' => data_get($departamento, 'departamento_hijo.nombre'),
+            'dependencia' => $dependencia?->id,
+            'area' => $area?->id,
         ];
     }
 }

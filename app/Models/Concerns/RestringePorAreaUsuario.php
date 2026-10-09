@@ -10,7 +10,7 @@ trait RestringePorAreaUsuario
     protected static function bootRestringePorAreaUsuario(): void
     {
         static::addGlobalScope('area-del-usuario', function (Builder $query): void {
-            AlcanceAreaUsuario::aplicar($query);
+            AlcanceAreaUsuario::aplicarDepartamento($query);
         });
     }
 }

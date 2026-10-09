@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RestringePorAreaUsuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Bien extends Model
 {
-    use SoftDeletes;
+    use RestringePorAreaUsuario, SoftDeletes;
 
     protected $table = 'bienes';
 
@@ -40,6 +41,16 @@ class Bien extends Model
     public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class);
+    }
+
+    public function dependencia(): BelongsTo
+    {
+        return $this->belongsTo(DepartamentoAcceso::class, 'dependencia_id_accesos')->withTrashed();
+    }
+
+    public function area(): BelongsTo
+    {
+        return $this->belongsTo(DepartamentoAcceso::class, 'area_id_accesos')->withTrashed();
     }
 
     public function asignacionActual(): HasOne

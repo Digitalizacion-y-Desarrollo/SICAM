@@ -101,8 +101,8 @@
                                 </td>
                                 <td>{{ $bien->categoria?->nombre ?? 'Categoría eliminada' }}</td>
                                 <td>{{ $bien->numero_patrimonial }}</td>
-                                <td>{{ $bien->dependencia_id_accesos }} / {{ $bien->area_id_accesos }}</td>
-                                <td>{{ $bien->asignacionActual?->responsable?->nombre_completo ?? ($bien->asignacionActual?->tipo_responsabilidad === 'AREA' ? 'Área: ' . $bien->area_id_accesos : 'Sin asignar') }}
+                                <td>{{ $bien->dependencia?->nombre ?? 'Sin dependencia' }} / {{ $bien->area?->nombre ?? 'Sin área' }}</td>
+                                <td>{{ $bien->asignacionActual?->responsable?->nombre_completo ?? ($bien->asignacionActual?->tipo_responsabilidad === 'AREA' ? 'Área: ' . ($bien->area?->nombre ?? 'Sin área') : 'Sin asignar') }}
                                 </td>
                                 <td><span
                                         class="asset-status asset-status-{{ $bien->estado === 'DISPONIBLE' ? 'available' : 'assigned' }}">{{ str_replace('_', ' ', ucfirst(strtolower($bien->estado))) }}</span>

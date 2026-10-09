@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreResponsableRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class StoreResponsableRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['numero_empleado' => ['nullable', 'string', 'max:50', 'unique:responsables,numero_empleado'], 'nombre' => ['required', 'string', 'max:100'], 'apellido_paterno' => ['nullable', 'string', 'max:100'], 'apellido_materno' => ['nullable', 'string', 'max:100'], 'cargo' => ['nullable', 'string', 'max:150'], 'dependencia_id_accesos' => ['required', 'string', 'max:100'], 'area_id_accesos' => ['nullable', 'string', 'max:100'], 'correo' => ['nullable', 'email', 'max:150'], 'telefono' => ['nullable', 'string', 'max:30']];
+        return ['numero_empleado' => ['nullable', 'string', 'max:50', 'unique:responsables,numero_empleado'], 'nombre' => ['required', 'string', 'max:100'], 'apellido_paterno' => ['nullable', 'string', 'max:100'], 'apellido_materno' => ['nullable', 'string', 'max:100'], 'cargo' => ['nullable', 'string', 'max:150'], 'dependencia_id_accesos' => ['required', 'integer', Rule::exists('departamentos_accesos', 'id')->where('activo', true)], 'area_id_accesos' => ['nullable', 'integer', Rule::exists('departamentos_accesos', 'id')->where('activo', true)], 'correo' => ['nullable', 'email', 'max:150'], 'telefono' => ['nullable', 'string', 'max:30']];
     }
 
     public function messages(): array

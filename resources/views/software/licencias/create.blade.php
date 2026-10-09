@@ -7,6 +7,9 @@
     @php($dependenciasAccesos = collect($departamentos ?? [])->whereNull('parent_id'))
     @php($ubicacionUsuario = $ubicacionUsuario ?? ['dependencia' => null, 'area' => null])
     @php($esSuperusuario = $esSuperusuario ?? false)
+    @php($departamentoUser = ! $esSuperusuario ? session('accesos.departamento.departamento_padre.id') : null)
+    @php($areaUser = ! $esSuperusuario ? session('accesos.departamento.departamento_hijo.id') : null)
+    @php($ubicacionUsuario = ['dependencia' => $departamentoUser, 'area' => $areaUser])
 
     <form data-modalidad-licencia class="mx-auto max-w-[1440px] p-4 sm:p-6 lg:px-8 lg:py-7" action="{{ route('licencia.store') }}" method="POST" novalidate
         aria-label="Formulario de registro de licencia">
@@ -181,21 +184,15 @@
                     <p class="mt-1 text-xs text-muted">Quién administra o utiliza principalmente este acceso o software.
                     </p>
                     <div class="mt-4" style="display: grid; row-gap: 1.75rem;">
-                        <label class="block"><span class="form-label">Dependencia *</span>@if (! $esSuperusuario && filled($ubicacionUsuario['dependencia']))<input type="hidden" name="dependencia_id_accesos" value="{{ $ubicacionUsuario['dependencia'] }}">@endif<input name="dependencia_id_accesos"
-                            id="licencia-dependencia" list="licencia-dependencias"
-                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['dependencia']) ? $ubicacionUsuario['dependencia'] : old('dependencia_id_accesos') }}" class="form-control" maxlength="100"
-                                autocomplete="off" placeholder="Selecciona una dependencia" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))><datalist
-                                id="licencia-dependencias">
+                        <label class="block"><span class="form-label">Dependencia *</span>@if (! $esSuperusuario && filled($ubicacionUsuario['dependencia']))<input type="hidden" name="dependencia_id_accesos" value="{{ $ubicacionUsuario['dependencia'] }}">@endif<select @if ($esSuperusuario || ! filled($ubicacionUsuario['dependencia'])) name="dependencia_id_accesos" @endif
+                            id="licencia-dependencia" class="form-control" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))>
                                 @foreach ($dependenciasAccesos as $dependencia)
-                                    <option value="{{ $dependencia['nombre'] }}"></option>
+                                    <option value="{{ $dependencia['id'] }}" @selected((string) ($ubicacionUsuario['dependencia'] ?? old('dependencia_id_accesos')) === (string) $dependencia['id'])>{{ $dependencia['nombre'] }}</option>
                                 @endforeach
-                            </datalist>
+                            </select>
                             @error('dependencia_id_accesos')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror
                         </label>
-                        <label id="licencia-area-field" class="block" hidden><span class="form-label">Área</span>@if (! $esSuperusuario && filled($ubicacionUsuario['area']))<input type="hidden" name="area_id_accesos" value="{{ $ubicacionUsuario['area'] }}">@endif<input
-                            name="area_id_accesos" id="licencia-area" list="licencia-areas"
-                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['area']) ? $ubicacionUsuario['area'] : old('area_id_accesos') }}" class="form-control" maxlength="100"
-                                autocomplete="off" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))><datalist id="licencia-areas"></datalist>@error('area_id_accesos')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror</label>
+                        <label id="licencia-area-field" class="block" hidden><span class="form-label">Área</span>@if (! $esSuperusuario && filled($ubicacionUsuario['area']))<input type="hidden" name="area_id_accesos" value="{{ $ubicacionUsuario['area'] }}">@endif<select @if ($esSuperusuario || ! filled($ubicacionUsuario['area'])) name="area_id_accesos" @endif id="licencia-area" class="form-control" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))><option value="">Selecciona un área</option></select>@error('area_id_accesos')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror</label>
                         <label class="block"><span class="form-label">Persona responsable</span>
                             <input id="licencia-responsable" list="licencia-responsables"
                                 value="{{ $responsables->firstWhere('id', old('responsable_id'))?->nombre_completo }}"
@@ -255,7 +252,7 @@
             const dependencia = document.getElementById('licencia-dependencia');
             const area = document.getElementById('licencia-area');
             const areaField = document.getElementById('licencia-area-field');
-            const areas = document.getElementById('licencia-areas');
+            const areas = area;
             const data = document.getElementById('licencia-departamentos-data');
             const responsable = document.getElementById('licencia-responsable');
             const responsableId = document.getElementById('licencia-responsable-id');
@@ -264,13 +261,13 @@
 
             const departamentos = JSON.parse(data.textContent);
             const actualizarAreas = function(limpiar = false) {
-                const padre = departamentos.find((item) => item.parent_id === null && item.nombre ===
+                const padre = departamentos.find((item) => item.parent_id === null && String(item.id) ===
                     dependencia.value.trim());
                 const disponibles = padre ? departamentos.filter((item) => String(item.parent_id) === String(
                     padre.id)) : [];
-                areas.replaceChildren(...disponibles.map((item) => new Option('', item.nombre)));
+                areas.replaceChildren(...disponibles.map((item) => new Option(item.nombre, item.id)));
                 areaField.hidden = disponibles.length === 0;
-                if (limpiar && !disponibles.some((item) => item.nombre === area.value)) area.value = '';
+                if (limpiar && !disponibles.some((item) => String(item.id) === area.value)) area.value = '';
             };
 
             dependencia.addEventListener('input', () => actualizarAreas(true));

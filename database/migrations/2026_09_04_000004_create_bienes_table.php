@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('marca', 100)->nullable();
             $table->string('modelo', 100)->nullable();
             $table->string('numero_serie', 120)->nullable()->unique();
-            $table->string('dependencia_id_accesos', 100)->index();
-            $table->string('area_id_accesos', 100)->index();
+            $table->unsignedBigInteger('dependencia_id_accesos')->index();
+            $table->unsignedBigInteger('area_id_accesos')->nullable()->index();
             $table->string('ubicacion_fisica', 191)->nullable();
             $table->string('estado', 40)->default('DISPONIBLE')->index();
             $table->date('fecha_adquisicion')->nullable();
