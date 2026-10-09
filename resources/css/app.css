@@ -67,6 +67,7 @@
     .dropdown-link-active { @apply bg-brand/[.07] font-semibold text-brand; }
     .action-button { @apply inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-surface px-3 text-xs font-semibold text-ink transition hover:bg-soft; }
     .action-button-primary { @apply border-brand bg-brand text-white hover:bg-brand-dark; }
+    .cancel-button { @apply border-slate-400 bg-surface text-ink hover:border-slate-500; }
     .filter-button { @apply inline-flex h-8 items-center gap-2 rounded-md border border-line bg-surface px-2.5 text-[11px] text-ink; }
     .asset-table th { @apply bg-surface-alt px-3 py-3 text-left text-[10px] font-medium text-muted; }
     .asset-table td { @apply border-t border-line px-3 py-3 align-middle text-[12px] text-ink; }

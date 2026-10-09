@@ -19,6 +19,16 @@ document.querySelectorAll('form').forEach((form) => {
 let showingValidation = false;
 document.addEventListener('invalid', (event) => {
     event.preventDefault();
+    const field = event.target;
+    const previous = field.parentElement?.querySelector('[data-client-error]');
+    previous?.remove();
+    const error = document.createElement('p');
+    error.className = 'mt-1 text-sm text-red-700';
+    error.dataset.clientError = 'true';
+    error.setAttribute('role', 'alert');
+    error.textContent = field.validationMessage;
+    field.classList.add('border-red-500');
+    field.insertAdjacentElement('afterend', error);
     if (showingValidation) return;
     showingValidation = true;
     dialog.fire({ icon: 'warning', title: 'Revisa los datos', text: event.target.validationMessage }).then(() => {
@@ -49,6 +59,7 @@ function unlockAll() {
 document.addEventListener('submit', async (event) => {
     const form = event.target;
     if (!(form instanceof HTMLFormElement)) return;
+    if (form.method.toUpperCase() === 'GET') return;
     event.preventDefault();
     if (pending.has(form)) return;
     pending.add(form);
@@ -109,6 +120,12 @@ document.addEventListener('click', async (event) => {
 });
 
 window.addEventListener('pageshow', unlockAll);
+
+document.querySelectorAll('a, button').forEach((element) => {
+    if (element.textContent.trim().toLowerCase() !== 'cancelar') return;
+
+    element.classList.add('action-button', 'cancel-button');
+});
 
 const notifications = document.querySelector('#system-notifications');
 if (notifications) {
