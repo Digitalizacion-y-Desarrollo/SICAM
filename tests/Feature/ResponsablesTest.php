@@ -71,4 +71,35 @@ class ResponsablesTest extends TestCase
             ->assertSee('"fieldErrors":{"nombre":', false)
             ->assertSee('"dependencia_id_accesos":', false);
     }
+
+    public function test_responsibles_list_is_limited_to_the_logged_in_users_area_unless_they_are_a_superuser(): void
+    {
+        Responsable::create([
+            'nombre' => 'Ana Desarrollo',
+            'dependencia_id_accesos' => 'Tecnología',
+            'area_id_accesos' => 'Desarrollo',
+        ]);
+        Responsable::create([
+            'nombre' => 'Luis Soporte',
+            'dependencia_id_accesos' => 'Tecnología',
+            'area_id_accesos' => 'Soporte',
+        ]);
+
+        $this->withSession([
+            'accesos.roles' => [],
+            'accesos.departamento' => [
+                'departamento_padre' => ['nombre' => 'Tecnología'],
+                'departamento_hijo' => ['nombre' => 'Desarrollo'],
+            ],
+        ])->get(route('patrimonio.responsables'))
+            ->assertOk()
+            ->assertSee('Ana Desarrollo')
+            ->assertDontSee('Luis Soporte');
+
+        $this->withSession(['accesos.roles' => ['superuser']])
+            ->get(route('patrimonio.responsables'))
+            ->assertOk()
+            ->assertSee('Ana Desarrollo')
+            ->assertSee('Luis Soporte');
+    }
 }

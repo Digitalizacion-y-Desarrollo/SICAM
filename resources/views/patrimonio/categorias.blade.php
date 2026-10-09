@@ -91,6 +91,9 @@
                                             @can('categorias.eliminar')
                                             <form method="POST"
                                                 action="{{ route('patrimonio.categorias.campos.destroy', $campo) }}"
+                                                data-confirm-delete
+                                                data-confirm-title="¿Eliminar campo dinámico?"
+                                                data-confirm-message="¿Estás seguro de eliminar el campo {{ $campo->nombre }}? Esta acción eliminará definitivamente sus valores registrados y no se puede deshacer."
                                                 >@csrf @method('DELETE')<button class="text-red-500" title="Eliminar campo">@include('patrimonio.includes.action-icon', ['icon' => 'delete', 'label' => 'Eliminar campo'])</button>
                                             </form>
                                             @endcan

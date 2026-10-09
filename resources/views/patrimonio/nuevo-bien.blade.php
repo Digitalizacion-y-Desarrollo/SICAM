@@ -29,13 +29,22 @@
                 </div>
                 <div class="rounded-xl border-2 border-dashed border-brand/30 bg-surface-alt p-5 lg:col-span-2">
                     <div class="flex items-start gap-3"><span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand/10 text-lg font-bold text-brand" aria-hidden="true">+</span><div><h3 class="text-sm font-bold text-ink">Fotografía del activo</h3><p class="mt-1 text-xs leading-5 text-muted">Agrega una imagen clara para facilitar su identificación.</p></div></div>
+                @if (isset($bien) && $bien->fotografia_path)
+                    <div class="mt-5">
+                        <p class="mb-2 text-xs font-semibold text-muted">Fotografía actual</p>
+                        <img id="foto-actual" src="{{ route('bienes.publico.fotografia', $bien->public_id) }}" alt="Fotografía actual del bien" class="max-h-56 w-full rounded-lg border border-line object-contain">
+                    </div>
+                @endif
                 <label class="mt-5 block cursor-pointer rounded-lg border border-line bg-surface p-3 text-center text-sm font-semibold text-brand transition hover:border-brand focus-within:ring-2 focus-within:ring-brand focus-within:ring-offset-2">
                     <span class="form-label">Fotografía</span><span class="mb-3 block text-xs text-muted">Selecciona una imagen PNG o JPG de hasta 5 MB.</span>
                     <input name="fotografia" id="bien-fotografia" type="file" accept="image/png,image/jpeg" class="sr-only">
                 </label>
                 <p class="mt-3 text-center text-xs text-muted">PNG o JPG, hasta 5 MB. Campo opcional.</p>
                 <p id="foto-error" class="mt-2 text-sm text-red-700" role="alert"></p>
-                <img id="foto-preview" alt="Vista previa de la fotografía del bien" class="mt-3 hidden max-h-56 w-full rounded-lg object-contain">
+                <div id="foto-nueva-preview-contenedor" class="mt-3 hidden">
+                    <p class="mb-2 text-xs font-semibold text-muted">Vista previa de la nueva fotografía</p>
+                    <img id="foto-preview" alt="Vista previa de la nueva fotografía del bien" class="max-h-56 w-full rounded-lg border border-line object-contain">
+                </div>
                 </div>
                 </div>
             </section>

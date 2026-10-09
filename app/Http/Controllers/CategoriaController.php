@@ -6,8 +6,10 @@ use App\Http\Requests\StoreCampoCategoriaRequest;
 use App\Http\Requests\StoreCategoriaRequest;
 use App\Models\CampoCategoria;
 use App\Models\Categoria;
+use App\Models\ValorBien;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class CategoriaController extends Controller
@@ -15,7 +17,8 @@ class CategoriaController extends Controller
     public function index(): View
     {
         $categorias = Categoria::withCount('bienes')->with('hijas')->whereNull('categoria_padre_id')->orderBy('nombre')->get();
-        $seleccionada = Categoria::with(['padre','campos'])->withCount('bienes')->find(request('categoria')) ?? Categoria::with(['padre','campos'])->withCount('bienes')->orderBy('nombre')->first();
+        $seleccionada = Categoria::with(['padre', 'campos'])->withCount('bienes')->find(request('categoria')) ?? Categoria::with(['padre', 'campos'])->withCount('bienes')->orderBy('nombre')->first();
+
         return view('patrimonio.categorias', compact('categorias', 'seleccionada'));
     }
 
@@ -24,6 +27,7 @@ class CategoriaController extends Controller
         $data = $request->validated();
         $data['slug'] = Str::slug($data['nombre']).'-'.Str::lower(Str::random(5));
         $categoria = Categoria::create($data);
+
         return redirect()->route('patrimonio.categorias', ['categoria' => $categoria])->with('success', 'Categoría creada correctamente.');
     }
 
@@ -34,12 +38,14 @@ class CategoriaController extends Controller
         $data['requerido'] = $request->boolean('requerido');
         $data['orden'] = $categoria->campos()->max('orden') + 1;
         $categoria->campos()->create($data);
+
         return back()->with('success', 'Campo dinámico agregado.');
     }
 
     public function destroyCampo(CampoCategoria $campo): RedirectResponse
     {
-        $campo->update(['activo' => false, 'requerido' => false]);
+        $campo->delete();
+
         return back()->with('success', 'Campo dinámico eliminado.');
     }
 
@@ -56,7 +62,9 @@ class CategoriaController extends Controller
         $parentId = $data['categoria_padre_id'] ?? null;
         $visited = [$categoria->id];
         while ($parentId) {
-            if (in_array((int) $parentId, $visited, true)) throw \Illuminate\Validation\ValidationException::withMessages(['categoria_padre_id' => 'La categoría no puede depender de sí misma ni de sus descendientes.']);
+            if (in_array((int) $parentId, $visited, true)) {
+                throw ValidationException::withMessages(['categoria_padre_id' => 'La categoría no puede depender de sí misma ni de sus descendientes.']);
+            }
             $visited[] = (int) $parentId;
             $parentId = Categoria::findOrFail($parentId)->categoria_padre_id;
         }
@@ -67,7 +75,9 @@ class CategoriaController extends Controller
 
     public function destroy(Categoria $categoria): RedirectResponse
     {
-        if ($categoria->bienes()->exists() || $categoria->hijas()->exists()) throw \Illuminate\Validation\ValidationException::withMessages(['categoria' => 'No se puede eliminar una categoría con bienes o subcategorías.']);
+        if ($categoria->bienes()->exists() || $categoria->hijas()->exists()) {
+            throw ValidationException::withMessages(['categoria' => 'No se puede eliminar una categoría con bienes o subcategorías.']);
+        }
         $categoria->delete();
 
         return redirect()->route('patrimonio.categorias')->with('success', 'Categoría eliminada.');
@@ -80,7 +90,9 @@ class CategoriaController extends Controller
 
     public function updateCampo(StoreCampoCategoriaRequest $request, CampoCategoria $campo): RedirectResponse
     {
-        if ($campo->tipo !== $request->input('tipo') && \App\Models\ValorBien::where('campo_categoria_id', $campo->id)->exists()) throw \Illuminate\Validation\ValidationException::withMessages(['tipo' => 'Este campo ya tiene valores registrados; conserva su tipo o crea un campo nuevo.']);
+        if ($campo->tipo !== $request->input('tipo') && ValorBien::where('campo_categoria_id', $campo->id)->exists()) {
+            throw ValidationException::withMessages(['tipo' => 'Este campo ya tiene valores registrados; conserva su tipo o crea un campo nuevo.']);
+        }
         $campo->update([...$request->validated(), 'requerido' => $request->boolean('requerido')]);
 
         return redirect()->route('patrimonio.categorias', ['categoria' => $campo->categoria_id])->with('success', 'Campo actualizado.');

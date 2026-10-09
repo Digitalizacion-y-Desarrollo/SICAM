@@ -7,7 +7,7 @@ import 'driver.js/dist/driver.css';
 window.Swal = Swal;
 import './registro-bien';
 import './licencias-modalidad';
-// import './campos-categoria';
+import './campos-categoria';
 import './departamentos-responsable';
 import './busqueda-global';
 // import './asignacion';

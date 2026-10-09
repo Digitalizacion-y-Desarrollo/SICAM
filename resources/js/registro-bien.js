@@ -91,9 +91,10 @@ if (form) {
     let previewUrl;
     const photo = form.querySelector('#bien-fotografia');
     const preview = form.querySelector('#foto-preview');
+    const previewContainer = form.querySelector('#foto-nueva-preview-contenedor');
     photo.addEventListener('change', () => {
         if (previewUrl) URL.revokeObjectURL(previewUrl);
-        preview.classList.add('hidden');
+        previewContainer.classList.add('hidden');
         preview.removeAttribute('src');
         const file = photo.files[0];
         const error = file && (!['image/png', 'image/jpeg'].includes(file.type) || file.size > 5 * 1024 * 1024)
@@ -103,7 +104,7 @@ if (form) {
         if (file && !error) {
             previewUrl = URL.createObjectURL(file);
             preview.src = previewUrl;
-            preview.classList.remove('hidden');
+            previewContainer.classList.remove('hidden');
         }
     });
     window.addEventListener('pageshow', () => {

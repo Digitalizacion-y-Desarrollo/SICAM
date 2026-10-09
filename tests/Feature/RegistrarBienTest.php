@@ -68,6 +68,30 @@ class RegistrarBienTest extends TestCase
         $this->get(route('patrimonio.bienes', ['buscar' => 'inexistente']))->assertOk()->assertDontSee($bien->folio_sicam);
     }
 
+    public function test_edit_form_shows_the_current_photo_and_a_new_photo_preview_container(): void
+    {
+        $categoria = Categoria::create(['nombre' => 'Equipo', 'slug' => 'equipo']);
+        $path = 'bienes/equipo.jpg';
+        Storage::disk('local')->put($path, 'foto');
+        $bien = Bien::create([
+            'categoria_id' => $categoria->id,
+            'folio_sicam' => 'SICAM-2026-000001',
+            'numero_patrimonial' => 'PAT-2026-000001',
+            'nombre' => 'Equipo de prueba',
+            'dependencia_id_accesos' => 'DEP-1',
+            'area_id_accesos' => 'AREA-1',
+            'estado' => 'DISPONIBLE',
+            'fotografia_path' => $path,
+        ]);
+
+        $this->get(route('patrimonio.bienes.edit', $bien))
+            ->assertOk()
+            ->assertSee('id="foto-actual"', false)
+            ->assertSee(route('bienes.publico.fotografia', $bien->public_id), false)
+            ->assertSee('id="foto-nueva-preview-contenedor"', false)
+            ->assertSee('Vista previa de la nueva fotografía');
+    }
+
     public function test_asset_list_combines_category_status_and_location_filters(): void
     {
         $this->post(route('patrimonio.bienes.store'), $this->payload([

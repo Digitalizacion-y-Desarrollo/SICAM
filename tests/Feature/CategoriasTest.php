@@ -69,4 +69,59 @@ class CategoriasTest extends TestCase
             ->assertViewHas('seleccionada', fn ($seleccionada) => $seleccionada->id === $categoria->id && $seleccionada->bienes_count === 1
             );
     }
+
+    public function test_deleting_a_dynamic_field_requires_confirmation_and_removes_it_permanently(): void
+    {
+        config([
+            'database.default' => 'sqlite',
+            'database.connections.sqlite.database' => ':memory:',
+        ]);
+        $this->artisan('migrate', ['--database' => 'sqlite', '--force' => true])->assertExitCode(0);
+        $this->withoutVite();
+        $this->actingAs(User::factory()->create());
+
+        $categoria = Categoria::create(['nombre' => 'Equipo', 'slug' => 'equipo']);
+        $campo = $categoria->campos()->create([
+            'nombre' => 'Color',
+            'clave' => 'color',
+            'tipo' => 'TEXTO',
+        ]);
+
+        $this->get(route('patrimonio.categorias', ['categoria' => $categoria]))
+            ->assertOk()
+            ->assertSee('data-confirm-delete', false)
+            ->assertSee('¿Eliminar campo dinámico?', false);
+
+        $this->delete(route('patrimonio.categorias.campos.destroy', $campo))
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('campos_categoria', ['id' => $campo->id]);
+    }
+
+    public function test_editing_a_selection_field_renders_options_in_an_accordion(): void
+    {
+        config([
+            'database.default' => 'sqlite',
+            'database.connections.sqlite.database' => ':memory:',
+        ]);
+        $this->artisan('migrate', ['--database' => 'sqlite', '--force' => true])->assertExitCode(0);
+        $this->withoutVite();
+        $this->actingAs(User::factory()->create());
+
+        $categoria = Categoria::create(['nombre' => 'Equipo', 'slug' => 'equipo']);
+        $campo = $categoria->campos()->create([
+            'nombre' => 'Sistema operativo',
+            'clave' => 'sistema_operativo',
+            'tipo' => 'SELECCION',
+            'opciones' => ['Windows', 'Linux'],
+        ]);
+
+        $this->get(route('patrimonio.campos.edit', $campo))
+            ->assertOk()
+            ->assertSee('data-campo-opciones', false)
+            ->assertSee('data-opciones-lista', false)
+            ->assertSee('data-quitar-opcion', false)
+            ->assertSee('Windows')
+            ->assertSee('Linux');
+    }
 }

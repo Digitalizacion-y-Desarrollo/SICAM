@@ -40,10 +40,25 @@ document.querySelectorAll('[data-campo-dinamico-form]').forEach((form) => {
         const isSelection = type.value === 'SELECCION';
         options.hidden = !isSelection;
         options.disabled = !isSelection;
+        options.querySelectorAll('input, button').forEach((element) => {
+            element.disabled = !isSelection;
+        });
     };
 
-    type.addEventListener('change', updateType);
+    type.addEventListener('change', () => {
+        updateType();
+
+        if (type.value === 'SELECCION' && options instanceof HTMLDetailsElement) {
+            options.open = true;
+        }
+    });
     form.querySelector('[data-agregar-opcion]').addEventListener('click', addOption);
+    list.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' || !event.target.matches('input[name="opciones[]"]')) return;
+
+        event.preventDefault();
+        addOption();
+    });
     list.addEventListener('click', (event) => {
         const remove = event.target.closest('[data-quitar-opcion]');
         if (!remove || remove.disabled) return;
