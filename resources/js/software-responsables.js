@@ -19,10 +19,10 @@ document.querySelectorAll('[data-nuevo-responsable]').forEach((container) => {
     document.body.append(modal);
 
     const updateAreas = () => {
-        const dependencyId = dependency.selectedOptions[0]?.dataset.departamentoId;
+        const dependencyId = dependency.value;
         const areas = dependencyId ? departments.filter((item) => String(item.parent_id) === dependencyId) : [];
         area.replaceChildren(new Option(dependencyId ? 'Sin área asignada' : 'Selecciona primero una dependencia', ''));
-        areas.forEach((item) => area.add(new Option(item.nombre, item.nombre)));
+        areas.forEach((item) => area.add(new Option(item.nombre, item.id)));
         area.disabled = !dependencyId || !areas.length;
     };
     const hideModal = () => {

@@ -26,18 +26,18 @@ class StoreBienRequest extends FormRequest
             'numero_serie' => ['nullable', 'string', 'max:120', Rule::unique('bienes', 'numero_serie')],
             'marca' => ['nullable', 'string', 'max:100'],
             'modelo' => ['nullable', 'string', 'max:100'],
-            'dependencia_id_accesos' => ['required', 'string', 'max:100'],
-            'area_id_accesos' => ['nullable', 'string', 'max:100'],
+            'dependencia_id_accesos' => ['required', 'integer', Rule::exists('departamentos_accesos', 'id')->where('activo', true)],
+            'area_id_accesos' => ['nullable', 'integer', Rule::exists('departamentos_accesos', 'id')->where('activo', true)],
             'ubicacion_fisica' => ['nullable', 'string', 'max:191'],
             'responsabilidad' => ['required', Rule::in(['persona', 'area', 'ninguna'])],
             'crear_responsable' => ['nullable', 'boolean'],
             'responsable_id' => [Rule::excludeIf(! $persona || $nuevo), 'required', 'integer',
                 Rule::exists('responsables', 'id')->where('activo', true)->whereNull('deleted_at')
-                    ->where('dependencia_id_accesos', is_string($this->input('dependencia_id_accesos')) ? $this->input('dependencia_id_accesos') : '')
+                    ->where('dependencia_id_accesos', $this->integer('dependencia_id_accesos'))
                     ->where(function ($query) {
                         $area = $this->input('area_id_accesos');
 
-                        return is_string($area) && $area !== ''
+                        return filled($area)
                             ? $query->where('area_id_accesos', $area)
                             : $query->whereNull('area_id_accesos');
                     })],

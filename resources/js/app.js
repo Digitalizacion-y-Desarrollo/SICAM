@@ -10,6 +10,7 @@ import './licencias-modalidad';
 import './campos-categoria';
 import './departamentos-responsable';
 import './busqueda-global';
+import './patrimonio-ui';
 // import './asignacion';
 // import './patrimonio-ui';
 
@@ -257,7 +258,7 @@ document.querySelectorAll('[data-password-toggle]').forEach((button) => {
     });
 });
 
-document.querySelectorAll('[data-confirm-delete]').forEach((form) => {
+document.querySelectorAll('[data-confirm-delete-legacy]').forEach((form) => {
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -280,7 +281,7 @@ document.querySelectorAll('[data-confirm-delete]').forEach((form) => {
     });
 });
 
-const notifications = document.querySelector('#system-notifications');
+const notifications = document.querySelector('#system-notifications-legacy');
 if (notifications) {
     const data = JSON.parse(notifications.textContent);
 

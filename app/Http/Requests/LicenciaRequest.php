@@ -66,8 +66,8 @@ class LicenciaRequest extends FormRequest
                 'string',
                 Rule::in(array_keys(Licencia::ESTADOS)),
             ],
-            'dependencia_id_accesos' => ['required', 'string', 'max:100'],
-            'area_id_accesos' => ['nullable', 'string', 'max:100'],
+            'dependencia_id_accesos' => ['required', 'integer', Rule::exists('departamentos_accesos', 'id')->where('activo', true)],
+            'area_id_accesos' => ['nullable', 'integer', Rule::exists('departamentos_accesos', 'id')->where('activo', true)],
             'responsable_id' => ['nullable', 'integer', 'exists:responsables,id'],
 
             'fecha_adquisicion' => ['required', 'date'],

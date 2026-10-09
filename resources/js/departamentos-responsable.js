@@ -8,18 +8,21 @@ document.querySelectorAll('[data-departamentos-form]').forEach((container) => {
     const dependencies = departments.filter((department) => department.parent_id === null);
 
     const updateAreas = (preserveValue = false) => {
-        const selectedDependency = dependencies.find((department) => department.nombre === dependency.value.trim());
+        const selectedDependency = dependencies.find((department) => String(department.id) === dependency.value.trim());
         const areas = selectedDependency
             ? departments.filter((department) => department.parent_id === selectedDependency.id)
             : [];
-        const currentAreaIsValid = areas.some((department) => department.nombre === area.value.trim());
+        const currentArea = area.value;
+        const currentAreaIsValid = areas.some((department) => String(department.id) === currentArea.trim());
 
         if (!preserveValue && !currentAreaIsValid) area.value = '';
-        areasList.replaceChildren(...areas.map((department) => {
+        areasList.replaceChildren(new Option('Selecciona un área', ''), ...areas.map((department) => {
             const option = document.createElement('option');
-            option.value = department.nombre;
+            option.value = department.id;
+            option.textContent = department.nombre;
             return option;
         }));
+        area.value = currentAreaIsValid ? currentArea : '';
         area.disabled = dependencies.length > 0 && (!selectedDependency || !areas.length);
         help.textContent = areas.length
             ? `${areas.length} ${areas.length === 1 ? 'área disponible' : 'áreas disponibles'} para la dependencia seleccionada.`

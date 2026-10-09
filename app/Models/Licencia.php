@@ -165,6 +165,16 @@ class Licencia extends Model
         return $this->belongsTo(Responsable::class)->withTrashed();
     }
 
+    public function dependencia(): BelongsTo
+    {
+        return $this->belongsTo(DepartamentoAcceso::class, 'dependencia_id_accesos')->withTrashed();
+    }
+
+    public function area(): BelongsTo
+    {
+        return $this->belongsTo(DepartamentoAcceso::class, 'area_id_accesos')->withTrashed();
+    }
+
     public function asignaciones(): HasMany
     {
         return $this->hasMany(LicenciaAsignacion::class);

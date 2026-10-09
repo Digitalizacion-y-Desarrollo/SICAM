@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'SICAM | Responsables')
 @section('content')
+@php($responsables->each(function ($responsable) { $responsable->setAttribute('dependencia_id_accesos', $responsable->dependencia?->nombre); $responsable->setAttribute('area_id_accesos', $responsable->area?->nombre); }))
     <div class="mx-auto max-w-[1440px] p-4 sm:p-6 lg:px-8 lg:py-7">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>

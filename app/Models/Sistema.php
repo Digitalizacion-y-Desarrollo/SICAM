@@ -33,6 +33,16 @@ class Sistema extends Model
         return $this->belongsTo(Responsable::class, 'responsable_tecnico_id')->withTrashed();
     }
 
+    public function dependencia(): BelongsTo
+    {
+        return $this->belongsTo(DepartamentoAcceso::class, 'dependencia_id_accesos')->withTrashed();
+    }
+
+    public function area(): BelongsTo
+    {
+        return $this->belongsTo(DepartamentoAcceso::class, 'area_id_accesos')->withTrashed();
+    }
+
     public function historialEstados(): HasMany
     {
         return $this->hasMany(SistemaEstado::class)->orderByDesc('fecha_inicio')->orderByDesc('id');

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Bien;
 use App\Models\Categoria;
+use App\Models\DepartamentoAcceso;
 use App\Models\Responsable;
 use App\Models\User;
 use App\Services\RegistrarBien;
@@ -90,6 +91,22 @@ class RegistrarBienTest extends TestCase
             ->assertSee(route('bienes.publico.fotografia', $bien->public_id), false)
             ->assertSee('id="foto-nueva-preview-contenedor"', false)
             ->assertSee('Vista previa de la nueva fotografía');
+    }
+
+    public function test_keeps_the_selected_location_when_the_user_has_no_access_scope(): void
+    {
+        DepartamentoAcceso::create(['id' => 10, 'nombre' => 'Administración']);
+        DepartamentoAcceso::create(['id' => 11, 'nombre' => 'Sistemas', 'parent_id' => 10]);
+
+        $this->post(route('patrimonio.bienes.store'), $this->payload([
+            'dependencia_id_accesos' => 10,
+            'area_id_accesos' => 11,
+        ]))->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('bienes', [
+            'dependencia_id_accesos' => 10,
+            'area_id_accesos' => 11,
+        ]);
     }
 
     public function test_asset_list_combines_category_status_and_location_filters(): void

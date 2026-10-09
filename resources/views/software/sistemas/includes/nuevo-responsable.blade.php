@@ -14,7 +14,7 @@
             <select class="form-control" data-responsable-campo="dependencia_id_accesos" data-responsable-dependencia>
                 <option value="">Selecciona una dependencia</option>
                 @foreach (collect($departamentos ?? [])->whereNull('parent_id') as $dependencia)
-                    <option value="{{ $dependencia['nombre'] }}" data-departamento-id="{{ $dependencia['id'] }}">{{ $dependencia['nombre'] }}</option>
+                    <option value="{{ $dependencia['id'] }}">{{ $dependencia['nombre'] }}</option>
                 @endforeach
             </select>
         </label>

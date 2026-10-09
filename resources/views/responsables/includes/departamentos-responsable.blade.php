@@ -1,16 +1,17 @@
 @php($dependenciasAccesos = collect($departamentos)->whereNull('parent_id'))
 <div data-departamentos-form class="contents">
     <label class="block"><span class="form-label">Dependencia *</span>
-        <input name="dependencia_id_accesos" list="{{ $prefix }}-dependencias" value="{{ $dependenciaValue }}" class="form-control @error('dependencia_id_accesos') border-red-500 @enderror" maxlength="100" autocomplete="off" placeholder="Selecciona una dependencia" required data-dependencia-accesos>
-        <datalist id="{{ $prefix }}-dependencias">
+        <select name="dependencia_id_accesos" class="form-control @error('dependencia_id_accesos') border-red-500 @enderror" required data-dependencia-accesos>
+            <option value="">Selecciona una dependencia</option>
             @foreach ($dependenciasAccesos as $dependencia)
-                <option value="{{ $dependencia['nombre'] }}"></option>
+                <option value="{{ $dependencia['id'] }}" @selected((string) $dependenciaValue === (string) $dependencia['id'])>{{ $dependencia['nombre'] }}</option>
             @endforeach
-        </datalist>
+        </select>
     </label>
     <label class="block"><span class="form-label">Área{{ ($areaRequired ?? false) ? ' *' : '' }}</span>
-        <input name="area_id_accesos" list="{{ $prefix }}-areas" value="{{ $areaValue }}" class="form-control @error('area_id_accesos') border-red-500 @enderror" maxlength="100" autocomplete="off" placeholder="Selecciona un área" @required($areaRequired ?? false) data-area-accesos>
-        <datalist id="{{ $prefix }}-areas" data-areas-accesos></datalist>
+        <select name="area_id_accesos" class="form-control @error('area_id_accesos') border-red-500 @enderror" @required($areaRequired ?? false) data-area-accesos>
+            <option value="">Selecciona un área</option>
+        </select>
         <span class="mt-1 block text-xs text-muted" data-areas-accesos-ayuda>Selecciona una dependencia para consultar sus áreas.</span>
     </label>
     <script type="application/json" data-departamentos-accesos>@json($departamentos)</script>

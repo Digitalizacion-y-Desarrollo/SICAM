@@ -10,6 +10,9 @@
         $dependenciasAccesos = collect($departamentos ?? [])->whereNull('parent_id');
         $ubicacionUsuario = $ubicacionUsuario ?? ['dependencia' => null, 'area' => null];
         $esSuperusuario = $esSuperusuario ?? false;
+        $departamentoUser = ! $esSuperusuario ? session('accesos.departamento.departamento_padre.id') : null;
+        $areaUser = ! $esSuperusuario ? session('accesos.departamento.departamento_hijo.id') : null;
+        $ubicacionUsuario = ['dependencia' => $departamentoUser, 'area' => $areaUser];
 
         $responsableFuncional = collect($responsables ?? [])->firstWhere('id', $fieldValue('responsable_funcional_id'));
 
@@ -454,7 +457,7 @@
                             <datalist id="dependencias-accesos">
 
                                 @foreach ($dependenciasAccesos as $dependencia)
-                                    <option value="{{ $dependencia['nombre'] }}"></option>
+                                    <option value="{{ $dependencia['id'] }}" label="{{ $dependencia['nombre'] }}"></option>
                                 @endforeach
 
                             </datalist>
@@ -925,7 +928,7 @@
 
             function actualizarAreas(limpiarArea = false) {
 
-                const dependenciaNombre =
+                const dependenciaId =
                     dependenciaInput.value.trim();
 
 
@@ -937,7 +940,7 @@
 
                         return (
                             item.parent_id === null &&
-                            item.nombre === dependenciaNombre
+                            String(item.id) === dependenciaId
                         );
 
                     });

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'SICAM | Asignaciones')
 @section('content')
+@php($asignaciones->each(function ($asignacion) { $asignacion->setAttribute('dependencia_id_accesos', $asignacion->dependencia?->nombre); $asignacion->setAttribute('area_id_accesos', $asignacion->area?->nombre); }))
 <div class="mx-auto max-w-[1440px] space-y-5 p-4 sm:p-6 lg:p-8">
 <header class="flex flex-wrap justify-between gap-4"><div><h1 class="text-2xl font-bold">Asignaciones</h1><p class="mt-1 text-sm text-muted">Resguardos por persona y área</p></div>@can('asignaciones.crear')<a data-crud class="action-button action-button-primary" href="{{ route('patrimonio.asignaciones.create') }}">Nueva asignación</a>@endcan</header>
 <form method="GET" class="form-card flex flex-wrap gap-3"><label class="min-w-0 flex-1"><span class="sr-only">Buscar bien</span><input name="buscar" value="{{ request('buscar') }}" class="form-control" placeholder="Buscar por bien o folio"></label><select name="estado" aria-label="Estado" class="form-control w-auto"><option value="">Todos</option><option value="vigente" @selected(request('estado') === 'vigente')>Vigentes</option><option value="cerrada" @selected(request('estado') === 'cerrada')>Cerradas</option></select><button class="action-button">Filtrar</button></form>

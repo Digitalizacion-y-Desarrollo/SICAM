@@ -17,7 +17,7 @@ class AsignacionController extends Controller
     public function index()
     {
         request()->validate(['buscar' => ['nullable', 'string', 'max:200'], 'estado' => ['nullable', 'in:vigente,cerrada']]);
-        $asignaciones = Asignacion::with(['bien', 'responsable'])
+        $asignaciones = Asignacion::with(['bien', 'responsable', 'dependencia', 'area'])
             ->when(request('buscar'), fn ($q, $buscar) => $q->whereHas('bien', fn ($q) => $q->where('nombre', 'like', "%{$buscar}%")->orWhere('folio_sicam', 'like', "%{$buscar}%")))
             ->when(request('estado') === 'vigente', fn ($q) => $q->whereNull('fecha_fin'))
             ->when(request('estado') === 'cerrada', fn ($q) => $q->whereNotNull('fecha_fin'))->latest('id')->paginate(15)->withQueryString();
@@ -42,7 +42,7 @@ class AsignacionController extends Controller
     private function form(?Asignacion $asignacion = null)
     {
         $bienes = Bien::orderBy('nombre')->get(['id', 'nombre', 'folio_sicam']);
-        $responsables = Responsable::where('activo', true)->orderBy('nombre')->get();
+        $responsables = Responsable::with(['dependencia', 'area'])->where('activo', true)->orderBy('nombre')->get();
         $departamentos = $this->departamentosAccesos->listar();
 
         return view('patrimonio.form-asignacion', compact('asignacion', 'bienes', 'responsables', 'departamentos'));
@@ -50,7 +50,7 @@ class AsignacionController extends Controller
 
     public function show(Asignacion $asignacion)
     {
-        $asignacion->load(['bien', 'responsable']);
+        $asignacion->load(['bien', 'responsable', 'dependencia', 'area']);
 
         return view('patrimonio.detalle-asignacion', compact('asignacion'));
     }

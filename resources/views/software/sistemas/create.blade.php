@@ -10,6 +10,9 @@
         $dependenciasAccesos = collect($departamentos ?? [])->whereNull('parent_id');
         $ubicacionUsuario = $ubicacionUsuario ?? ['dependencia' => null, 'area' => null];
         $esSuperusuario = $esSuperusuario ?? false;
+        $departamentoUser = ! $esSuperusuario ? session('accesos.departamento.departamento_padre.id') : null;
+        $areaUser = ! $esSuperusuario ? session('accesos.departamento.departamento_hijo.id') : null;
+        $ubicacionUsuario = ['dependencia' => $departamentoUser, 'area' => $areaUser];
     @endphp
 
     <form id="registro-software" class="mx-auto max-w-[1440px] p-4 sm:p-6 lg:px-8 lg:py-7" novalidate
@@ -394,17 +397,16 @@
                             </span>
 
                             @if (! $esSuperusuario && filled($ubicacionUsuario['dependencia']))<input type="hidden" name="dependencia_id_accesos" value="{{ $ubicacionUsuario['dependencia'] }}">@endif
-                            <input name="dependencia_id_accesos" id="software-dependencia" list="dependencias-accesos"
-                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['dependencia']) ? $ubicacionUsuario['dependencia'] : $fieldValue('dependencia_id_accesos') }}" class="form-control" maxlength="100"
-                                autocomplete="off" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))>
-
-                            <datalist id="dependencias-accesos">
-
+                            <select @if ($esSuperusuario || ! filled($ubicacionUsuario['dependencia'])) name="dependencia_id_accesos" @endif id="software-dependencia" class="form-control" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))>
+                                @unless (! $esSuperusuario && filled($ubicacionUsuario['dependencia']))
+                                    <option value="">Selecciona una dependencia</option>
+                                @endunless
                                 @foreach ($dependenciasAccesos as $dependencia)
-                                    <option value="{{ $dependencia['nombre'] }}"></option>
+                                    @if (! $departamentoUser || (int) $dependencia['id'] === (int) $departamentoUser)
+                                        <option value="{{ $dependencia['id'] }}" @selected((string) ($ubicacionUsuario['dependencia'] ?? $fieldValue('dependencia_id_accesos')) === (string) $dependencia['id'])>{{ $dependencia['nombre'] }}</option>
+                                    @endif
                                 @endforeach
-
-                            </datalist>
+                            </select>
 
                             @error('dependencia_id_accesos')
                                 <span class="mt-1 block text-xs text-red-700">
@@ -423,11 +425,9 @@
                             </span>
 
                             @if (! $esSuperusuario && filled($ubicacionUsuario['area']))<input type="hidden" name="area_id_accesos" value="{{ $ubicacionUsuario['area'] }}">@endif
-                            <input name="area_id_accesos" id="software-area" list="areas-accesos"
-                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['area']) ? $ubicacionUsuario['area'] : $fieldValue('area_id_accesos') }}" class="form-control" maxlength="100"
-                                autocomplete="off" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))>
-
-                            <datalist id="areas-accesos"></datalist>
+                            <select @if ($esSuperusuario || ! filled($ubicacionUsuario['area'])) name="area_id_accesos" @endif id="software-area" data-valor="{{ $ubicacionUsuario['area'] ?? $fieldValue('area_id_accesos') }}" class="form-control" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))>
+                                <option value="">Selecciona un área</option>
+                            </select>
 
                             <span id="areas-accesos-ayuda" class="mt-1 block text-xs text-muted">
                                 Selecciona una dependencia para consultar sus áreas.
@@ -671,14 +671,14 @@
 
             function actualizarAreas(limpiarArea = false) {
 
-                const dependenciaNombre = dependenciaInput.value.trim();
+                const dependenciaId = dependenciaInput.value.trim();
 
                 areasDatalist.innerHTML = '';
 
                 const dependencia = departamentos.find(function(item) {
                     return (
                         item.parent_id === null &&
-                        item.nombre === dependenciaNombre
+                        String(item.id) === dependenciaId
                     );
                 });
 
@@ -704,16 +704,24 @@
 
                     const option = document.createElement('option');
 
-                    option.value = area.nombre;
+                    option.value = area.id;
+                    option.textContent = area.nombre;
 
                     areasDatalist.appendChild(option);
 
                 });
 
+                areaInput.value = areaInput.dataset.valor || areaInput.value;
+
             }
 
 
             dependenciaInput.addEventListener('input', function() {
+
+                actualizarAreas(true);
+
+            });
+            dependenciaInput.addEventListener('change', function() {
 
                 actualizarAreas(true);
 

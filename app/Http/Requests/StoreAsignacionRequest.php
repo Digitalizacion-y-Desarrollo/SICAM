@@ -18,7 +18,7 @@ class StoreAsignacionRequest extends FormRequest
             'bien_id' => ['required', 'integer', Rule::exists('bienes', 'id')->whereNull('deleted_at')],
             'responsabilidad' => ['required', Rule::in(['persona', 'area'])],
             'responsable_id' => ['exclude_unless:responsabilidad,persona', 'required', 'integer', Rule::exists('responsables', 'id')->where('activo', true)->whereNull('deleted_at')],
-            'dependencia_id_accesos' => ['required', 'string', 'max:100'], 'area_id_accesos' => ['nullable', 'string', 'max:100'],
+            'dependencia_id_accesos' => ['required', 'integer', Rule::exists('departamentos_accesos', 'id')->where('activo', true)], 'area_id_accesos' => ['nullable', 'integer', Rule::exists('departamentos_accesos', 'id')->where('activo', true)],
             'estado' => ['required', Rule::in(['ASIGNADO', 'EN_RESGUARDO'])], 'observaciones' => ['nullable', 'string', 'max:5000'],
         ];
     }

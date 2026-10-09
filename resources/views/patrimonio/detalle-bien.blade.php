@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', 'SICAM | '.$bien->nombre)
 @section('content')
+@php($bien->setAttribute('dependencia_id_accesos', $bien->dependencia?->nombre))
+@php($bien->setAttribute('area_id_accesos', $bien->area?->nombre))
 <div class="mx-auto max-w-[1440px] space-y-5 p-4 sm:p-6 lg:p-8">
     <a href="{{ route('patrimonio.bienes') }}" class="text-sm text-brand">← Bienes patrimoniales</a>
     <header class="flex flex-wrap items-start justify-between gap-4">

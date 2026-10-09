@@ -5,6 +5,7 @@
 @section('breadcrumb', 'Software / Sistemas')
 
 @section('content')
+@php($sistemas->each(function ($sistema) { $sistema->setAttribute('dependencia_id_accesos', $sistema->dependencia?->nombre); $sistema->setAttribute('area_id_accesos', $sistema->area?->nombre); }))
 
     {{-- ========================================================= --}}
     {{-- DATATABLE CSS --}}

@@ -31,8 +31,8 @@ return new class extends Migration
             $table->decimal('costo_total', 12, 2)->nullable();
             $table->string('moneda', 10)->default('MXN');
             $table->string('estado', 30)->default('activa')->index();
-            $table->string('dependencia_id_accesos', 100)->nullable()->index();
-            $table->string('area_id_accesos', 100)->nullable();
+            $table->unsignedBigInteger('dependencia_id_accesos')->nullable()->index();
+            $table->unsignedBigInteger('area_id_accesos')->nullable();
             $table->foreignId('responsable_id')->nullable()->constrained('responsables')->restrictOnDelete();
             $table->foreignId('proveedor_id')->nullable()->constrained('proveedores')->nullOnDelete();
             $table->text('observaciones')->nullable();

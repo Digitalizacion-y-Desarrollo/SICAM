@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\RestringePorAreaUsuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Asignacion extends Model
 {
+    use RestringePorAreaUsuario;
     protected $table = 'asignaciones';
 
     protected $guarded = [];
@@ -24,5 +26,15 @@ class Asignacion extends Model
     public function bien(): BelongsTo
     {
         return $this->belongsTo(Bien::class)->withTrashed();
+    }
+
+    public function dependencia(): BelongsTo
+    {
+        return $this->belongsTo(DepartamentoAcceso::class, 'dependencia_id_accesos')->withTrashed();
+    }
+
+    public function area(): BelongsTo
+    {
+        return $this->belongsTo(DepartamentoAcceso::class, 'area_id_accesos')->withTrashed();
     }
 }

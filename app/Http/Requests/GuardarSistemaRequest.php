@@ -32,8 +32,8 @@ class GuardarSistemaRequest extends FormRequest
             'tipo' => ['required', Rule::in(array_keys(Sistema::TIPOS))],
             'origen' => ['required', Rule::in(array_keys(Sistema::ORIGENES))],
             'estado' => ['required', Rule::in(array_keys(Sistema::ESTADOS))],
-            'dependencia_id_accesos' => ['required', 'string', 'max:100'],
-            'area_id_accesos' => ['nullable', 'string', 'max:100'],
+            'dependencia_id_accesos' => ['required', 'integer'],
+            'area_id_accesos' => ['nullable', 'integer'],
             'responsable_funcional_id' => $this->reglasResponsable('responsable_funcional_id'),
             'responsable_tecnico_id' => $this->reglasResponsable('responsable_tecnico_id'),
             'url_produccion' => ['nullable', 'url:http,https', 'max:2048'],
@@ -76,10 +76,10 @@ class GuardarSistemaRequest extends FormRequest
             }
 
             // La integración actual de SICAM conserva el nombre de Accesos en estos campos.
-            $dependencia = $departamentos->whereNull('parent_id')->firstWhere('nombre', $this->input('dependencia_id_accesos'));
+            $dependencia = $departamentos->whereNull('parent_id')->firstWhere('id', (string) $this->input('dependencia_id_accesos'));
             if (! $dependencia) {
                 $validator->errors()->add('dependencia_id_accesos', 'Selecciona una dependencia vigente de Accesos.');
-            } elseif ($this->filled('area_id_accesos') && ! $departamentos->where('parent_id', $dependencia['id'])->contains('nombre', $this->input('area_id_accesos'))) {
+            } elseif ($this->filled('area_id_accesos') && ! $departamentos->where('parent_id', $dependencia['id'])->contains('id', (string) $this->input('area_id_accesos'))) {
                 $validator->errors()->add('area_id_accesos', 'El área debe pertenecer a la dependencia seleccionada.');
             }
         }];

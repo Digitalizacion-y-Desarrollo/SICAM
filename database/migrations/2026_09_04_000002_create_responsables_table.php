@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('apellido_paterno', 100)->nullable();
             $table->string('apellido_materno', 100)->nullable();
             $table->string('cargo', 150)->nullable();
-            $table->string('dependencia_id_accesos', 100)->index();
-            $table->string('area_id_accesos', 100)->index();
+            $table->unsignedBigInteger('dependencia_id_accesos')->index();
+            $table->unsignedBigInteger('area_id_accesos')->nullable()->index();
             $table->string('correo', 150)->nullable();
             $table->string('telefono', 30)->nullable();
             $table->boolean('activo')->default(true)->index();
