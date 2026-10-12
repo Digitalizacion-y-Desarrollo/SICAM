@@ -31,14 +31,14 @@
                 <div class="mt-3 space-y-2">
                     @forelse($categorias as $categoria)
                         <div><a href="{{ route('patrimonio.categorias', ['categoria' => $categoria]) }}"
-                                class="tree-item"><img src="{{ asset('assets/icons/chevron-down.svg') }}" alt=""
+                                class="tree-item {{ $seleccionada?->is($categoria) ? 'tree-item-active' : '' }}"><img src="{{ asset('assets/icons/chevron-down.svg') }}" alt=""
                                     class="size-4 shrink-0 opacity-80"><img src="{{ asset('assets/icons/building.svg') }}"
                                     alt="" class="size-4"><span class="flex-1">{{ $categoria->nombre }}</span><small
                                     class="text-[10px] text-muted">{{ $categoria->hijas->count() }} subcat.</small></a>
                             <div class="ml-6 border-l border-line pl-2">
                                 @foreach ($categoria->hijas as $hija)
                                     <a href="{{ route('patrimonio.categorias', ['categoria' => $hija]) }}"
-                                        class="tree-child {{ $seleccionada?->is($hija) ? 'bg-brand/[.07] font-semibold text-brand' : '' }}">{{ $hija->nombre }}</a>
+                                        class="tree-child {{ $seleccionada?->is($hija) ? 'tree-child-active' : '' }}">{{ $hija->nombre }}</a>
                                 @endforeach
                             </div>
                     </div>@empty<p class="py-6 text-center text-xs text-muted">Aún no hay categorías.</p>

@@ -28,6 +28,45 @@
 [aria-busy="true"] { cursor: wait; }
 @media (prefers-reduced-motion: reduce) { .action-spinner { animation-duration: 2s; } }
 
+.skip-link { position: fixed; z-index: 100; top: .75rem; left: .75rem; transform: translateY(-200%); border-radius: .5rem; background: var(--color-brand); padding: .75rem 1rem; color: #fff; font-weight: 700; }
+.skip-link:focus { transform: translateY(0); outline: 3px solid #fff; outline-offset: 2px; }
+
+.accessibility-widget { position: fixed; z-index: 90; right: 1rem; bottom: 1rem; }
+.accessibility-trigger { display: inline-flex; align-items: center; gap: .5rem; border: 2px solid #fff; border-radius: 9999px; background: var(--color-brand); padding: .75rem 1rem; color: #fff; font-size: .875rem; font-weight: 700; box-shadow: 0 6px 20px #0004; }
+.accessibility-trigger svg { width: 1.25rem; height: 1.25rem; }
+.accessibility-panel { position: absolute; right: 0; bottom: calc(100% + .75rem); width: min(22rem, calc(100vw - 2rem)); border: 1px solid var(--color-line); border-radius: .75rem; background: #fff; padding: 1rem; color: var(--color-ink); box-shadow: 0 16px 40px #0003; }
+.accessibility-panel h2 { font-size: 1rem; font-weight: 700; }
+.accessibility-panel p { margin-top: .25rem; font-size: .75rem; color: var(--color-muted); }
+.accessibility-panel fieldset { margin-top: 1rem; }
+.accessibility-panel legend { margin-bottom: .5rem; font-size: .75rem; font-weight: 700; }
+.accessibility-options { display: flex; flex-wrap: wrap; gap: .5rem; }
+.accessibility-options-stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.accessibility-options button, .accessibility-reset, .accessibility-close { border: 1px solid var(--color-line); border-radius: .375rem; background: #fff; padding: .5rem .625rem; font-size: .75rem; font-weight: 600; text-align: left; }
+.accessibility-options button[aria-pressed="true"] { border-color: var(--color-brand); background: color-mix(in srgb, var(--color-brand) 8%, white); color: var(--color-brand); }
+.accessibility-close { padding: .125rem .5rem; font-size: 1.25rem; line-height: 1; }
+.accessibility-note { line-height: 1.35; }
+.accessibility-reset { margin-top: 1rem; width: 100%; text-align: center; }
+
+:focus-visible { outline: 3px solid var(--color-gold); outline-offset: 2px; }
+html.a11y-font-large { font-size: 112.5%; }
+html.a11y-font-xlarge { font-size: 125%; }
+html.a11y-spacing body { line-height: 1.75; letter-spacing: .025em; word-spacing: .08em; }
+html.a11y-readable body { font-family: Arial, Verdana, sans-serif; }
+html.a11y-links a:not(.accessibility-trigger) { text-decoration: underline !important; text-underline-offset: .18em; }
+html.a11y-motion *, html.a11y-motion *::before, html.a11y-motion *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+html.a11y-grayscale { filter: grayscale(100%); }
+html.a11y-contrast { --color-brand: #000; --color-brand-dark: #000; --color-canvas: #fff; --color-surface: #fff; --color-surface-alt: #fff; --color-soft: #eee; --color-line: #000; --color-ink: #000; --color-muted: #111; }
+html.a11y-contrast .accessibility-panel, html.a11y-contrast .accessibility-options button, html.a11y-contrast .accessibility-reset { border-width: 2px; }
+
+@media print {
+    @page { margin: 0; }
+    body { margin: 0; }
+    body * { visibility: hidden; }
+    .print-label, .print-label * { visibility: visible; }
+    .print-label { position: fixed; inset: 0; display: block; width: 60mm; margin: 0; padding: 0; text-align: center; }
+    .accessibility-widget, .skip-link { display: none !important; }
+}
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source "../**/*.blade.php";
@@ -83,7 +122,9 @@
     .data-table th { @apply bg-surface-alt px-4 py-3 text-left text-[10px] font-semibold text-muted; }
     .data-table td { @apply border-t border-line px-4 py-3 text-xs text-ink; }
     .tree-item { @apply flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-ink; }
+    .tree-item-active { @apply bg-brand/[.07] font-semibold text-brand; }
     .tree-child { @apply block rounded-md px-3 py-1.5 text-xs text-ink hover:bg-soft; }
+    .tree-child-active { @apply bg-brand/[.07] font-semibold text-brand; }
     .section-heading { @apply text-xs font-semibold uppercase tracking-[.6px] text-muted; }
     .module-card { @apply flex min-h-[174px] flex-col justify-between rounded-xl border border-line bg-surface p-5; }
     .module-card-active { @apply border-brand ring-1 ring-brand; }

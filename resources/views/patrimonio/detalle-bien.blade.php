@@ -31,7 +31,7 @@
         </div>
         <aside class="space-y-5">
             @if($bien->fotografia_path)<section class="form-card"><img src="{{ route('bienes.publico.fotografia', $bien->public_id) }}" alt="Fotografía del bien" class="max-h-64 w-full object-contain"></section>@endif
-            <section class="form-card text-center"><h2>Etiqueta QR</h2><img src="data:image/svg+xml;base64,{{ base64_encode(app(\App\Services\QrBien::class)->imagen($bien)) }}" alt="QR de la ficha pública" class="mx-auto mt-3 size-52 max-w-full"><p class="text-xs font-semibold">{{ $bien->numero_patrimonial }}</p><a href="{{ route('bienes.publico', $bien->public_id) }}" target="_blank" rel="noopener" class="mt-3 inline-block text-sm text-brand">Abrir ficha pública</a></section>
+            <section class="form-card text-center"><h2>Etiqueta QR</h2><div class="print-label mx-auto mt-3 max-w-full bg-brand p-3 text-white"><img src="data:image/svg+xml;base64,{{ base64_encode(app(\App\Services\QrBien::class)->imagen($bien)) }}" alt="QR de la ficha pública" class="mx-auto size-52 max-w-full"><p class="mt-2 text-xs font-bold">FOLIO: {{ $bien->folio_sicam }}</p><p class="mt-1 text-xs">{{ $bien->dependencia?->nombre ?: $bien->dependencia_id_accesos }}</p></div><a href="{{ route('bienes.publico', $bien->public_id) }}" target="_blank" rel="noopener" class="mt-3 inline-block text-sm text-brand">Abrir ficha pública</a></section>
             <section class="form-card"><h2>Resguardo actual</h2><p class="mt-3 text-sm">{{ $bien->asignacionActual?->responsable?->nombre_completo ?? ($bien->asignacionActual ? 'Área: '.$bien->area_id_accesos : 'Sin asignar') }}</p></section>
         </aside>
     </div>

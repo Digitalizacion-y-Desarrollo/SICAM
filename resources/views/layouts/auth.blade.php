@@ -12,7 +12,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="bg-canvas font-sans text-ink antialiased">
-        <main>@yield('content')</main>
+        <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+        <main id="main-content">@yield('content')</main>
         @include('includes.notifications')
+        @include('includes.accessibility')
     </body>
 </html>

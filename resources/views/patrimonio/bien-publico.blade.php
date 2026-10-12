@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ $ficha['folio_sicam'] }} · SICAM</title><link rel="icon" type="image/png" href="{{ asset('assets/icons/logo-sin-fondo.png') }}"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">@vite('resources/css/app.css')</head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ $ficha['folio_sicam'] }} · SICAM</title><link rel="icon" type="image/png" href="{{ asset('assets/icons/logo-sin-fondo.png') }}"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">@vite(['resources/css/app.css', 'resources/js/accessibility.js'])</head>
 <body class="bg-canvas font-sans text-ink">
-    <main class="mx-auto max-w-3xl p-4 sm:p-8">
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a><main id="main-content" class="mx-auto max-w-3xl p-4 sm:p-8">
         <header class="mb-6 border-b border-line pb-5"><img src="{{ asset('assets/icons/sicam-logo.png') }}" alt="SICAM" class="h-20 w-56 object-contain"><p class="mt-3 text-sm text-muted">Inventario municipal · Nezahualcóyotl</p></header>
         <article class="form-card">
             <p class="text-sm font-semibold text-brand">{{ $ficha['folio_sicam'] }}</p><h1 class="mt-2 text-2xl font-bold">{{ $ficha['nombre'] }}</h1>
@@ -13,6 +13,6 @@
                 @endforeach
             </dl>
         </article>
-    </main>
+    </main>@include('includes.accessibility')
 </body>
 </html>

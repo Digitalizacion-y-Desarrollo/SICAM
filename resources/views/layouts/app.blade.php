@@ -18,14 +18,16 @@
 </head>
 
 <body class="bg-canvas font-sans text-ink antialiased">
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
     <div class="min-h-screen lg:flex">
         @include('includes.sidebar')
         <div class="min-w-0 flex-1">
             @include('includes.header')
-            <main>@yield('content')</main>
+            <main id="main-content">@yield('content')</main>
             @include('includes.notifications')
         </div>
     </div>
+    @include('includes.accessibility')
 </body>
 
 </html>

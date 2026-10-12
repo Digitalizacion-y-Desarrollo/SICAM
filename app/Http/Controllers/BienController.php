@@ -116,7 +116,7 @@ class BienController extends Controller
     {
         $formato = request()->validate(['formato' => ['nullable', Rule::in(['svg', 'png'])]])['formato'] ?? 'svg';
 
-        return response($qr->imagen($bien, $formato))->header('Content-Type', $formato === 'png' ? 'image/png' : 'image/svg+xml')
+        return response($qr->etiqueta($bien, $formato))->header('Content-Type', $formato === 'png' ? 'image/png' : 'image/svg+xml')
             ->header('Content-Disposition', 'attachment; filename="'.$bien->folio_sicam.'.'.$formato.'"');
     }
 

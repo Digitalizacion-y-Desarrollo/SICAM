@@ -11,6 +11,7 @@ import './campos-categoria';
 import './departamentos-responsable';
 import './busqueda-global';
 import './patrimonio-ui';
+import './accessibility';
 // import './asignacion';
 // import './patrimonio-ui';
 
