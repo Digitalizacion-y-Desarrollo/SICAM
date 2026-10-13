@@ -1,4 +1,5 @@
 <div class="mt-2" data-nuevo-proveedor data-url="{{ route('licencia.proveedores.store') }}"
+    data-autocompletar-url="{{ route('licencia.proveedores.autocompletar') }}"
     @if ($recargar ?? false) data-proveedor-recargar @endif>
     <button type="button" class="text-sm font-semibold text-brand hover:underline" data-proveedor-toggle
         aria-haspopup="dialog" aria-controls="nuevo-proveedor">+ Registrar un nuevo proveedor</button>
@@ -17,8 +18,12 @@
         <fieldset class="grid gap-4 p-5 sm:grid-cols-2" data-proveedor-campos disabled>
             <label class="block sm:col-span-2">
                 <span class="form-label">Nombre del proveedor o plataforma *</span>
-                <input type="text" class="form-control" data-proveedor-campo="nombre" maxlength="191"
-                    placeholder="Ej. Microsoft, Platzi, Adobe o Canva" autocomplete="organization" required>
+                <div class="flex gap-2">
+                    <input type="text" class="form-control" data-proveedor-campo="nombre" maxlength="191"
+                        placeholder="Ej. Microsoft, Platzi, Adobe o Canva" autocomplete="organization" required>
+                    <button type="button" class="action-button shrink-0" data-proveedor-autocompletar>Buscar datos con IA</button>
+                </div>
+                <span class="mt-1 block text-xs text-muted">Busca datos públicos y completa únicamente los campos vacíos.</span>
             </label>
 
             <label class="block">
@@ -79,6 +84,10 @@
     </dialog>
 
     <p class="mt-2 text-xs text-muted" role="status" data-proveedor-resultado></p>
+    <div class="mt-2 text-xs text-muted" data-proveedor-fuentes hidden>
+        <p class="font-semibold">Fuentes consultadas</p>
+        <ul class="mt-1 list-disc pl-4" data-proveedor-fuentes-lista></ul>
+    </div>
 </div>
 
 @once
@@ -94,10 +103,14 @@
                 const save = modal.querySelector('[data-proveedor-guardar]');
                 const cancel = modal.querySelector('[data-proveedor-cancelar]');
                 const close = modal.querySelector('[data-proveedor-cerrar]');
+                const autocomplete = modal.querySelector('[data-proveedor-autocompletar]');
                 const error = modal.querySelector('[data-proveedor-error]');
                 const result = container.querySelector('[data-proveedor-resultado]');
+                const sources = container.querySelector('[data-proveedor-fuentes]');
+                const sourceList = container.querySelector('[data-proveedor-fuentes-lista]');
                 const inputs = Array.from(fields.querySelectorAll('[data-proveedor-campo]'));
                 let pending = false;
+                let searching = false;
 
                 document.body.append(modal);
 
@@ -121,8 +134,76 @@
                     else fields.disabled = true;
                 });
 
+                autocomplete.addEventListener('click', async function() {
+                    if (pending || searching) return;
+                    const name = inputs.find(function(input) { return input.dataset.proveedorCampo === 'nombre'; });
+                    if (!name.value.trim()) {
+                        error.textContent = 'Escribe el nombre del proveedor o plataforma para buscar sus datos.';
+                        error.hidden = false;
+                        name.focus();
+                        return;
+                    }
+
+                    searching = true;
+                    error.hidden = true;
+                    result.textContent = '';
+                    sources.hidden = true;
+                    sourceList.replaceChildren();
+                    const original = autocomplete.innerHTML;
+                    autocomplete.disabled = true;
+                    autocomplete.setAttribute('aria-busy', 'true');
+                    autocomplete.setAttribute('aria-label', 'Buscando datos');
+                    autocomplete.innerHTML = '<span class="action-spinner action-spinner-only" aria-hidden="true"></span>';
+
+                    try {
+                        const data = new FormData();
+                        data.set('nombre', name.value.trim());
+                        data.set('_token', document.querySelector('meta[name="csrf-token"]')?.content || '');
+                        const response = await fetch(container.dataset.autocompletarUrl, {
+                            method: 'POST',
+                            body: data,
+                            headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        });
+                        const payload = await response.json().catch(function() { return {}; });
+                        if (!response.ok) throw new Error(payload.message || 'No fue posible buscar los datos. Puedes capturarlos manualmente.');
+
+                        let completed = 0;
+                        inputs.forEach(function(input) {
+                            const value = payload.datos?.[input.dataset.proveedorCampo];
+                            if (input.dataset.proveedorCampo !== 'nombre' && input.type !== 'checkbox' && !input.value.trim() && value) {
+                                input.value = value;
+                                completed++;
+                            }
+                        });
+                        (payload.fuentes || []).forEach(function(source) {
+                            const item = document.createElement('li');
+                            const link = document.createElement('a');
+                            link.href = source.url;
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+                            link.className = 'text-brand underline';
+                            link.textContent = source.titulo || source.url;
+                            item.append(link);
+                            sourceList.append(item);
+                        });
+                        sources.hidden = !sourceList.children.length;
+                        result.textContent = completed
+                            ? 'Se completaron ' + completed + ' campos con datos públicos. Verifícalos antes de guardar.'
+                            : 'No se encontraron datos públicos confiables. Puedes completar el formulario manualmente.';
+                    } catch (exception) {
+                        error.textContent = exception.message;
+                        error.hidden = false;
+                    } finally {
+                        searching = false;
+                        autocomplete.disabled = false;
+                        autocomplete.removeAttribute('aria-busy');
+                        autocomplete.removeAttribute('aria-label');
+                        autocomplete.innerHTML = original;
+                    }
+                });
+
                 save.addEventListener('click', async function() {
-                    if (pending) return;
+                    if (pending || searching) return;
                     if (!inputs[0].value.trim()) {
                         error.textContent = 'Escribe el nombre del proveedor o plataforma.';
                         error.hidden = false;

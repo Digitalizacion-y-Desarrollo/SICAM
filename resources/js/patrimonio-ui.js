@@ -38,11 +38,16 @@ document.addEventListener('invalid', (event) => {
 
 function lock(element) {
     if (originals.has(element)) return;
-    originals.set(element, { html: element.innerHTML, disabled: element.disabled });
+    originals.set(element, {
+        html: element.innerHTML,
+        disabled: element.disabled,
+        ariaLabel: element.getAttribute('aria-label'),
+    });
     element.setAttribute('aria-busy', 'true');
     element.setAttribute('aria-disabled', 'true');
+    element.setAttribute('aria-label', 'Procesando');
     if ('disabled' in element) element.disabled = true;
-    element.innerHTML = '<span class="action-spinner" aria-hidden="true"></span><span>Procesando…</span>';
+    element.innerHTML = '<span class="action-spinner action-spinner-only" aria-hidden="true"></span>';
 }
 
 function unlockAll() {
@@ -50,6 +55,8 @@ function unlockAll() {
         element.innerHTML = original.html;
         element.removeAttribute('aria-busy');
         element.removeAttribute('aria-disabled');
+        if (original.ariaLabel === null) element.removeAttribute('aria-label');
+        else element.setAttribute('aria-label', original.ariaLabel);
         if ('disabled' in element) element.disabled = original.disabled;
     });
     originals.clear();

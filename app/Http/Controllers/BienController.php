@@ -63,7 +63,7 @@ class BienController extends Controller
         $categorias = Categoria::where('activo', true)->with(['padre', 'campos' => fn ($query) => $query->where('activo', true)])->orderBy('nombre')->get();
         $responsables = Responsable::where('activo', true)->orderBy('nombre')->get();
         $departamentos = $departamentosAccesos->listar();
-        
+
         return view('patrimonio.nuevo-bien', compact('categorias', 'responsables', 'departamentos') + $this->datosUbicacionFormulario());
     }
 
@@ -116,7 +116,7 @@ class BienController extends Controller
     {
         $formato = request()->validate(['formato' => ['nullable', Rule::in(['svg', 'png'])]])['formato'] ?? 'svg';
 
-        return response($qr->etiqueta($bien, $formato))->header('Content-Type', $formato === 'png' ? 'image/png' : 'image/svg+xml')
+        return response($qr->etiqueta($bien, $formato))->header('Content-Type', $formato === 'png' ? 'image/png' : 'image/svg+xml; charset=UTF-8')
             ->header('Content-Disposition', 'attachment; filename="'.$bien->folio_sicam.'.'.$formato.'"');
     }
 

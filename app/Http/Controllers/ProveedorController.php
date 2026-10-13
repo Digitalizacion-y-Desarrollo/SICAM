@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProveedorRequest;
 use App\Models\Proveedor;
+use App\Services\BuscarProveedorConIa;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -48,6 +50,23 @@ class ProveedorController extends Controller
         }
 
         return back()->with('success', 'Proveedor registrado correctamente.');
+    }
+
+    public function autocompletar(Request $request, BuscarProveedorConIa $buscador): JsonResponse
+    {
+        $datos = $request->validate(['nombre' => ['required', 'string', 'max:191']]);
+
+        try {
+            return response()->json($buscador->buscar($datos['nombre']));
+        } catch (\LogicException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 503);
+        } catch (\Throwable $exception) {
+            Log::warning('No se pudieron consultar los datos públicos del proveedor.', [
+                'exception' => $exception,
+            ]);
+
+            return response()->json(['message' => 'No fue posible buscar los datos en este momento. Puedes capturarlos manualmente.'], 502);
+        }
     }
 
     public function edit(Proveedor $proveedor): View

@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('licencia')->name('licencia.')->group(function () {
         Route::get('/resumen', [LicenciaController::class, 'resumen'])->middleware('can:licencias.ver')->name('resumen');
         Route::get('/proveedores', [ProveedorController::class, 'index'])->middleware('can:proveedores.ver')->name('proveedores');
+        Route::post('/proveedores/autocompletar', [ProveedorController::class, 'autocompletar'])->middleware(['can:proveedores.crear', 'throttle:10,1'])->name('proveedores.autocompletar');
         Route::post('/proveedores', [ProveedorController::class, 'store'])->middleware('can:proveedores.crear')->name('proveedores.store');
         Route::get('/proveedores/{proveedor}/editar', [ProveedorController::class, 'edit'])->middleware('can:proveedores.editar')->name('proveedores.edit');
         Route::put('/proveedores/{proveedor}', [ProveedorController::class, 'update'])->middleware('can:proveedores.editar')->name('proveedores.update');

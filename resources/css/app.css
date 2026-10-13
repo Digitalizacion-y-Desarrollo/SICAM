@@ -24,6 +24,7 @@
     border-radius: 50%;
     animation: action-spin .7s linear infinite;
 }
+.action-spinner-only { margin-right: 0; }
 @keyframes action-spin { to { transform: rotate(360deg); } }
 [aria-busy="true"] { cursor: wait; }
 @media (prefers-reduced-motion: reduce) { .action-spinner { animation-duration: 2s; } }

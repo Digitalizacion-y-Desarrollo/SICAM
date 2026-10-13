@@ -11,7 +11,7 @@
             @can('bienes.editar')
                 <a data-crud href="{{ route('patrimonio.bienes.edit', $bien) }}" class="action-button">Editar</a>
             @endcan
-            <a data-download data-filename="{{ $bien->folio_sicam }}.png" href="{{ route('patrimonio.bienes.qr', ['bien' => $bien, 'formato' => 'png']) }}" class="action-button action-button-primary">Descargar QR</a>
+            <a data-download data-filename="{{ $bien->folio_sicam }}.svg" href="{{ route('patrimonio.bienes.qr', ['bien' => $bien, 'formato' => 'svg']) }}" class="action-button action-button-primary">Descargar QR</a>
             @can('bienes.eliminar')
                 <form method="POST" action="{{ route('patrimonio.bienes.destroy', $bien) }}">@csrf @method('DELETE')<button class="action-button text-red-700">Eliminar</button></form>
             @endcan
@@ -21,7 +21,7 @@
         <div class="space-y-5">
             <section class="form-card" data-tour="Esta ficha reúne los datos generales, la ubicación y las características capturadas." data-tour-title="Información del activo"><h2>Información del bien</h2>
                 <dl class="mt-4 grid gap-5 sm:grid-cols-2">
-                    @foreach(['numero_patrimonial' => 'No. patrimonial', 'numero_serie' => 'No. de serie', 'marca' => 'Marca', 'modelo' => 'Modelo', 'dependencia_id_accesos' => 'Dependencia', 'area_id_accesos' => 'Área', 'ubicacion_fisica' => 'Ubicación física', 'fecha_adquisicion' => 'Fecha de adquisición', 'costo' => 'Costo de adquisición', 'proveedor' => 'Proveedor', 'numero_factura' => 'No. de factura', 'observaciones' => 'Observaciones'] as $key => $label)
+                    @foreach(['numero_patrimonial' => 'No. patrimonial', 'numero_serie' => 'No. de serie', 'dependencia_id_accesos' => 'Dependencia', 'area_id_accesos' => 'Área', 'ubicacion_fisica' => 'Ubicación física', 'fecha_adquisicion' => 'Fecha de adquisición', 'costo' => 'Costo de adquisición', 'proveedor' => 'Proveedor', 'numero_factura' => 'No. de factura', 'observaciones' => 'Observaciones'] as $key => $label)
                         <div><dt class="text-xs text-muted">{{ $label }}</dt><dd class="mt-1 break-words text-sm font-semibold">{{ $bien->$key ?? 'No registrado' }}</dd></div>
                     @endforeach
                 </dl>

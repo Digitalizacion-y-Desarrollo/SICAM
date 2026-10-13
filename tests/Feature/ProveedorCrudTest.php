@@ -6,6 +6,8 @@ use App\Models\Licencia;
 use App\Models\Proveedor;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ProveedorCrudTest extends TestCase
@@ -96,6 +98,55 @@ class ProveedorCrudTest extends TestCase
 
         $this->assertDatabaseMissing('proveedores', ['id' => $proveedor->id]);
         $this->assertNull($licencia->fresh()->proveedor_id);
+    }
+
+    public function test_autocompletar_proveedor_usa_busqueda_web_y_devuelve_datos_sugeridos(): void
+    {
+        config(['services.openai.key' => 'prueba', 'services.openai.provider_lookup_model' => 'gpt-4.1-mini']);
+        Http::fake([
+            'api.openai.com/v1/responses' => Http::response([
+                'output' => [[
+                    'content' => [[
+                        'type' => 'output_text',
+                        'text' => json_encode([
+                            'razon_social' => 'Canva Pty Ltd',
+                            'rfc' => null,
+                            'contacto_nombre' => null,
+                            'contacto_email' => 'support@canva.com',
+                            'contacto_telefono' => null,
+                            'sitio_web' => 'https://www.canva.com',
+                            'observaciones' => 'Plataforma de diseño gráfico.',
+                        ]),
+                        'annotations' => [[
+                            'type' => 'url_citation',
+                            'url' => 'https://www.canva.com',
+                            'title' => 'Canva',
+                        ]],
+                    ]],
+                ]],
+            ]),
+        ]);
+
+        $this->postJson(route('licencia.proveedores.autocompletar'), ['nombre' => 'Canva'])
+            ->assertOk()
+            ->assertJsonPath('datos.razon_social', 'Canva Pty Ltd')
+            ->assertJsonPath('datos.rfc', null)
+            ->assertJsonPath('datos.sitio_web', 'https://www.canva.com')
+            ->assertJsonPath('fuentes.0.url', 'https://www.canva.com');
+
+        Http::assertSent(function (Request $request): bool {
+            return $request->url() === 'https://api.openai.com/v1/responses'
+                && $request['tools'][0]['type'] === 'web_search';
+        });
+    }
+
+    public function test_autocompletar_indica_cuando_la_llave_de_openai_no_esta_configurada(): void
+    {
+        config(['services.openai.key' => null]);
+
+        $this->postJson(route('licencia.proveedores.autocompletar'), ['nombre' => 'Canva'])
+            ->assertStatus(503)
+            ->assertJsonPath('message', 'La búsqueda con IA aún no está configurada. Agrega OPENAI_API_KEY al archivo .env.');
     }
 
     private function datosProveedor(): array

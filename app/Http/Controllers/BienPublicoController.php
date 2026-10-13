@@ -9,12 +9,17 @@ class BienPublicoController extends Controller
 {
     public function show(string $publicId)
     {
-        $bien = Bien::with(['categoria', 'dependencia', 'area'])->where('public_id', $publicId)->firstOrFail();
-        $ficha = $bien->only(['public_id', 'folio_sicam', 'numero_patrimonial', 'nombre', 'marca', 'modelo', 'estado', 'dependencia_id_accesos', 'area_id_accesos']);
+        $bien = Bien::with(['categoria', 'dependencia', 'area', 'valores.campo'])->where('public_id', $publicId)->firstOrFail();
+        $ficha = $bien->only(['public_id', 'folio_sicam', 'numero_patrimonial', 'nombre', 'estado', 'dependencia_id_accesos', 'area_id_accesos']);
         $ficha['categoria'] = $bien->categoria?->nombre;
         $ficha['dependencia_id_accesos'] = $bien->dependencia?->nombre;
         $ficha['area_id_accesos'] = $bien->area?->nombre;
         $ficha['fotografia'] = (bool) $bien->fotografia_path;
+        $ficha['caracteristicas'] = $bien->valores
+            ->filter(fn ($valor) => filled($valor->campo?->nombre) && filled($valor->valor))
+            ->map(fn ($valor) => ['nombre' => $valor->campo->nombre, 'valor' => $valor->valor])
+            ->values()
+            ->all();
 
         return response()->view('patrimonio.bien-publico', compact('ficha'))->header('X-Robots-Tag', 'noindex, nofollow');
     }

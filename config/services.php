@@ -34,6 +34,11 @@ return [
         'departamentos_url' => env('ACCESOS_DEPARTAMENTOS_URL', 'https://accesos.digitalneza.com/api/departamentos'),
     ],
 
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+        'provider_lookup_model' => env('OPENAI_PROVIDER_LOOKUP_MODEL', 'gpt-4.1-mini'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
