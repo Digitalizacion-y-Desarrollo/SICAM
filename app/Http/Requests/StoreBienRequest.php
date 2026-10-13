@@ -33,14 +33,7 @@ class StoreBienRequest extends FormRequest
             'crear_responsable' => ['nullable', 'boolean'],
             'responsable_id' => [Rule::excludeIf(! $persona || $nuevo), 'required', 'integer',
                 Rule::exists('responsables', 'id')->where('activo', true)->whereNull('deleted_at')
-                    ->where('dependencia_id_accesos', $this->integer('dependencia_id_accesos'))
-                    ->where(function ($query) {
-                        $area = $this->input('area_id_accesos');
-
-                        return filled($area)
-                            ? $query->where('area_id_accesos', $area)
-                            : $query->whereNull('area_id_accesos');
-                    })],
+                    ->where('dependencia_id_accesos', $this->integer('dependencia_id_accesos'))],
             'estado' => ['required', Rule::in($this->input('responsabilidad') === 'ninguna' ? ['DISPONIBLE'] : ['ASIGNADO', 'EN_RESGUARDO'])],
             'fecha_adquisicion' => ['nullable', 'date_format:Y-m-d'],
             'costo' => ['nullable', 'numeric', 'min:0', 'max:999999999999.99', 'decimal:0,2'],

@@ -171,7 +171,7 @@ class SistemaController extends Controller
 
         return [...$datos, ...array_filter([
             'dependencia_id_accesos' => AlcanceAreaUsuario::ubicacion()['dependencia'],
-            'area_id_accesos' => AlcanceAreaUsuario::ubicacion()['area'],
+            'area_id_accesos' => AlcanceAreaUsuario::ubicacion()['area'] ?? ($datos['area_id_accesos'] ?? null),
         ])];
     }
 }

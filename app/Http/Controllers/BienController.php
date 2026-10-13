@@ -140,7 +140,7 @@ class BienController extends Controller
         return array_filter([
             ...$datos,
             'dependencia_id_accesos' => $ubicacion['dependencia'],
-            'area_id_accesos' => $ubicacion['area'],
+            'area_id_accesos' => $ubicacion['area'] ?? ($datos['area_id_accesos'] ?? null),
         ], fn ($valor, $campo) => ! in_array($campo, ['dependencia_id_accesos', 'area_id_accesos'], true) || filled($valor), ARRAY_FILTER_USE_BOTH);
     }
 }

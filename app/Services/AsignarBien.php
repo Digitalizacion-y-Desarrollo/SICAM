@@ -20,8 +20,8 @@ class AsignarBien
             $area = $data['area_id_accesos'] ?? null;
             if ($data['responsabilidad'] === 'persona') {
                 $responsable = Responsable::whereKey($responsableId)->where('activo', true)->lockForUpdate()->first();
-                if (! $responsable || $responsable->dependencia_id_accesos !== $data['dependencia_id_accesos'] || $responsable->area_id_accesos !== $area) {
-                    throw ValidationException::withMessages(['responsable_id' => 'El responsable no está activo o no pertenece a la dependencia y área indicadas.']);
+                if (! $responsable || $responsable->dependencia_id_accesos !== $data['dependencia_id_accesos']) {
+                    throw ValidationException::withMessages(['responsable_id' => 'El responsable no está activo o no pertenece a la dependencia indicada.']);
                 }
             }
             if ($actual) {

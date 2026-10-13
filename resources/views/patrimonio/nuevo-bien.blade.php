@@ -125,8 +125,7 @@
                         @endforeach
                     </select>
                 </label>
-                @if ($esSuperusuario || $areaUser)
-                    <label class="block"><span class="form-label">Área *</span>
+                <label id="bien-area-field" class="block" hidden><span class="form-label">Área</span>
                         @if ($areaUser)
                             <input type="hidden" name="area_id_accesos" value="{{ $areaUser }}">
                         @endif
@@ -135,9 +134,6 @@
                         </select>
                         <span id="areas-accesos-ayuda" class="mt-1 block text-xs text-muted">Selecciona una dependencia para consultar sus áreas.</span>
                     </label>
-                @else
-                    <input type="hidden" name="area_id_accesos" value="">
-                @endif
                 <label class="block">
                     <div class="mb-1.5 flex items-center gap-2 text-xs font-semibold text-ink"><span>Ubicación física</span>
                     <details class="group relative inline-block">

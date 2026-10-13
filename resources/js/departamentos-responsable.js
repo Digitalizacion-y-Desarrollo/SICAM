@@ -1,9 +1,12 @@
 document.querySelectorAll('[data-departamentos-form]').forEach((container) => {
     const dependency = container.querySelector('[data-dependencia-accesos]');
     const area = container.querySelector('[data-area-accesos]');
-    const areasList = container.querySelector('[data-areas-accesos]');
+    const areasList = container.querySelector('[data-areas-accesos]') ?? area;
     const help = container.querySelector('[data-areas-accesos-ayuda]');
+    const areaField = container.querySelector('[data-area-accesos-field]');
     const data = container.querySelector('[data-departamentos-accesos]');
+    if (!dependency || !area || !areasList || !help) return;
+
     const departments = data ? JSON.parse(data.textContent) : [];
     const dependencies = departments.filter((department) => department.parent_id === null);
 
@@ -24,11 +27,12 @@ document.querySelectorAll('[data-departamentos-form]').forEach((container) => {
         }));
         area.value = currentAreaIsValid ? currentArea : '';
         area.disabled = dependencies.length > 0 && (!selectedDependency || !areas.length);
+        if (areaField) areaField.hidden = areas.length === 0;
         help.textContent = areas.length
             ? `${areas.length} ${areas.length === 1 ? 'área disponible' : 'áreas disponibles'} para la dependencia seleccionada.`
             : (dependency.value.trim() ? 'La dependencia seleccionada no tiene áreas activas.' : 'Selecciona una dependencia para consultar sus áreas.');
     };
 
-    dependency.addEventListener('input', () => updateAreas());
+    dependency.addEventListener('change', () => updateAreas());
     updateAreas(true);
 });

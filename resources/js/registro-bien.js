@@ -28,6 +28,7 @@ if (form) {
     const dependencies = departments.filter((department) => department.parent_id === null);
     const areasList = form.querySelector('#areas-accesos');
     const areasHelp = form.querySelector('#areas-accesos-ayuda');
+    const areaField = form.querySelector('#bien-area-field');
 
     const updateAreas = (preserveValue = false) => {
         if (!areasList) return;
@@ -47,6 +48,7 @@ if (form) {
         }));
         areasList.value = area.value;
         area.disabled = dependencies.length > 0 && (!selectedDependency || !areas.length);
+        if (areaField) areaField.hidden = areas.length === 0;
         areasHelp.textContent = areas.length
             ? `${areas.length} ${areas.length === 1 ? 'área disponible' : 'áreas disponibles'} para la dependencia seleccionada.`
             : (dependency.value.trim() ? 'La dependencia seleccionada no tiene áreas activas.' : 'Selecciona una dependencia para consultar sus áreas.');

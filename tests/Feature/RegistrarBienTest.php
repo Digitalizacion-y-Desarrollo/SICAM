@@ -226,19 +226,31 @@ class RegistrarBienTest extends TestCase
         $this->assertDatabaseCount('bienes', 0);
     }
 
-    public function test_rejects_inactive_deleted_or_other_location_responsibles(): void
+    public function test_accepts_responsibles_from_any_area_in_the_same_department_and_rejects_other_departments(): void
     {
-        foreach ([['activo' => false], ['area_id_accesos' => 'OTRA'], ['dependencia_id_accesos' => 'OTRA']] as $overrides) {
+        DepartamentoAcceso::insert([
+            ['id' => 10, 'nombre' => 'Administración', 'parent_id' => null, 'activo' => true],
+            ['id' => 11, 'nombre' => 'Finanzas', 'parent_id' => 10, 'activo' => true],
+            ['id' => 12, 'nombre' => 'Recursos Humanos', 'parent_id' => 10, 'activo' => true],
+            ['id' => 20, 'nombre' => 'Obras Públicas', 'parent_id' => null, 'activo' => true],
+        ]);
+        $payload = ['dependencia_id_accesos' => 10, 'area_id_accesos' => 11, 'responsabilidad' => 'persona', 'estado' => 'ASIGNADO'];
+
+        $this->post(route('patrimonio.bienes.store'), $this->payload([
+            ...$payload, 'responsable_id' => $this->responsable(['dependencia_id_accesos' => 10, 'area_id_accesos' => 12])->id,
+        ]))->assertSessionHasNoErrors();
+
+        foreach ([['activo' => false, 'dependencia_id_accesos' => 10, 'area_id_accesos' => 12], ['dependencia_id_accesos' => 20, 'area_id_accesos' => null]] as $overrides) {
             $this->post(route('patrimonio.bienes.store'), $this->payload([
-                'responsabilidad' => 'persona', 'estado' => 'ASIGNADO', 'responsable_id' => $this->responsable($overrides)->id,
+                ...$payload, 'responsable_id' => $this->responsable($overrides)->id,
             ]))->assertSessionHasErrors('responsable_id');
         }
-        $responsable = $this->responsable();
+        $responsable = $this->responsable(['dependencia_id_accesos' => 10, 'area_id_accesos' => 12]);
         $responsable->delete();
         $this->post(route('patrimonio.bienes.store'), $this->payload([
-            'responsabilidad' => 'persona', 'estado' => 'ASIGNADO', 'responsable_id' => $responsable->id,
+            ...$payload, 'responsable_id' => $responsable->id,
         ]))->assertSessionHasErrors('responsable_id');
-        $this->assertDatabaseCount('bienes', 0);
+        $this->assertDatabaseCount('bienes', 1);
     }
 
     public function test_rejects_inactive_or_deleted_category(): void

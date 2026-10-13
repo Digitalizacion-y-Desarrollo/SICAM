@@ -449,18 +449,14 @@
                             </span>
 
                             @if (! $esSuperusuario && filled($ubicacionUsuario['dependencia']))<input type="hidden" name="dependencia_id_accesos" value="{{ $ubicacionUsuario['dependencia'] }}">@endif
-                            <input name="dependencia_id_accesos" id="software-dependencia" list="dependencias-accesos"
-                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['dependencia']) ? $ubicacionUsuario['dependencia'] : $fieldValue('dependencia_id_accesos') }}" class="form-control" maxlength="100"
-                                autocomplete="off" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))>
+                            <select @if ($esSuperusuario || ! filled($ubicacionUsuario['dependencia'])) name="dependencia_id_accesos" @endif id="software-dependencia" class="form-control" required @disabled(! $esSuperusuario && filled($ubicacionUsuario['dependencia']))>
 
 
-                            <datalist id="dependencias-accesos">
-
+                                @unless (! $esSuperusuario && filled($ubicacionUsuario['dependencia']))<option value="">Selecciona una dependencia</option>@endunless
                                 @foreach ($dependenciasAccesos as $dependencia)
-                                    <option value="{{ $dependencia['id'] }}" label="{{ $dependencia['nombre'] }}"></option>
+                                    <option value="{{ $dependencia['id'] }}" @selected((string) (! $esSuperusuario && filled($ubicacionUsuario['dependencia']) ? $ubicacionUsuario['dependencia'] : $fieldValue('dependencia_id_accesos')) === (string) $dependencia['id'])>{{ $dependencia['nombre'] }}</option>
                                 @endforeach
-
-                            </datalist>
+                            </select>
 
 
                             @error('dependencia_id_accesos')
@@ -480,12 +476,10 @@
                             </span>
 
                             @if (! $esSuperusuario && filled($ubicacionUsuario['area']))<input type="hidden" name="area_id_accesos" value="{{ $ubicacionUsuario['area'] }}">@endif
-                            <input name="area_id_accesos" id="software-area" list="areas-accesos"
-                                value="{{ ! $esSuperusuario && filled($ubicacionUsuario['area']) ? $ubicacionUsuario['area'] : $fieldValue('area_id_accesos') }}" class="form-control" maxlength="100"
-                                autocomplete="off" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))>
+                            <select @if ($esSuperusuario || ! filled($ubicacionUsuario['area'])) name="area_id_accesos" @endif id="software-area" data-valor="{{ ! $esSuperusuario && filled($ubicacionUsuario['area']) ? $ubicacionUsuario['area'] : $fieldValue('area_id_accesos') }}" class="form-control" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))>
 
 
-                            <datalist id="areas-accesos"></datalist>
+                            </select>
 
 
                             <span id="areas-accesos-ayuda" class="mt-1 block text-xs text-muted">
@@ -877,7 +871,7 @@
 
             const areasDatalist =
                 document.getElementById(
-                    'areas-accesos'
+                    'software-area'
                 );
 
 
@@ -932,7 +926,10 @@
                     dependenciaInput.value.trim();
 
 
-                areasDatalist.innerHTML = '';
+                const valorActual = areaInput.dataset.valor || areaInput.value;
+                areasDatalist.replaceChildren(
+                    new Option('Selecciona un área', '')
+                );
 
 
                 const dependencia =
@@ -983,14 +980,18 @@
                     const option =
                         document.createElement('option');
 
-                    option.value =
-                        area.nombre;
+                    option.value = area.id;
+                    option.textContent = area.nombre;
 
                     areasDatalist.appendChild(
                         option
                     );
 
                 });
+
+                areaInput.value = areas.some(function(item) {
+                    return String(item.id) === String(valorActual);
+                }) ? valorActual : '';
 
             }
 
@@ -1003,7 +1004,7 @@
             */
 
             dependenciaInput.addEventListener(
-                'input',
+                'change',
                 function() {
 
                     actualizarAreas(true);

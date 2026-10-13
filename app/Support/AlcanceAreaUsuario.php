@@ -9,19 +9,7 @@ final class AlcanceAreaUsuario
 {
     public static function aplicar(Builder $query): void
     {
-        if (self::esSuperusuario() || ! session()->has('accesos.departamento')) {
-            return;
-        }
-
-        $area = self::ubicacion()['area'];
-
-        if (filled($area)) {
-            $query->where($query->qualifyColumn('area_id_accesos'), $area);
-
-            return;
-        }
-
-        $query->whereRaw('1 = 0');
+        self::aplicarDepartamento($query);
     }
 
     public static function aplicarDepartamento(Builder $query): void

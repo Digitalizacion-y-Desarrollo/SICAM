@@ -192,7 +192,7 @@
                             </select>
                             @error('dependencia_id_accesos')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror
                         </label>
-                        <label id="licencia-area-field" class="block" hidden><span class="form-label">Área</span>@if (! $esSuperusuario && filled($ubicacionUsuario['area']))<input type="hidden" name="area_id_accesos" value="{{ $ubicacionUsuario['area'] }}">@endif<select @if ($esSuperusuario || ! filled($ubicacionUsuario['area'])) name="area_id_accesos" @endif id="licencia-area" class="form-control" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))><option value="">Selecciona un área</option></select>@error('area_id_accesos')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror</label>
+                        <label id="licencia-area-field" class="block" hidden><span class="form-label">Área</span>@if (! $esSuperusuario && filled($ubicacionUsuario['area']))<input type="hidden" name="area_id_accesos" value="{{ $ubicacionUsuario['area'] }}">@endif<select @if ($esSuperusuario || ! filled($ubicacionUsuario['area'])) name="area_id_accesos" @endif id="licencia-area" data-valor="{{ $ubicacionUsuario['area'] ?? old('area_id_accesos') }}" class="form-control" @disabled(! $esSuperusuario && filled($ubicacionUsuario['area']))><option value="">Selecciona un área</option></select>@error('area_id_accesos')<span class="mt-1 block text-xs font-medium text-red-600" role="alert">{{ $message }}</span>@enderror</label>
                         <label class="block"><span class="form-label">Persona responsable</span>
                             <input id="licencia-responsable" list="licencia-responsables"
                                 value="{{ $responsables->firstWhere('id', old('responsable_id'))?->nombre_completo }}"
@@ -265,12 +265,14 @@
                     dependencia.value.trim());
                 const disponibles = padre ? departamentos.filter((item) => String(item.parent_id) === String(
                     padre.id)) : [];
-                areas.replaceChildren(...disponibles.map((item) => new Option(item.nombre, item.id)));
+                const valorActual = area.dataset.valor || area.value;
+                areas.replaceChildren(new Option('Selecciona un área', ''), ...disponibles.map((item) => new Option(item.nombre, item.id)));
+                area.value = disponibles.some((item) => String(item.id) === String(valorActual)) ? valorActual : '';
                 areaField.hidden = disponibles.length === 0;
                 if (limpiar && !disponibles.some((item) => String(item.id) === area.value)) area.value = '';
             };
 
-            dependencia.addEventListener('input', () => actualizarAreas(true));
+            dependencia.addEventListener('change', () => actualizarAreas(true));
             actualizarAreas();
 
             const actualizarResponsable = function() {

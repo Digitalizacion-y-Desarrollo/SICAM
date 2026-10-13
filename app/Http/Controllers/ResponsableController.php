@@ -6,7 +6,6 @@ use App\Http\Requests\StoreResponsableRequest;
 use App\Http\Requests\UpdateResponsableRequest;
 use App\Models\Responsable;
 use App\Services\DepartamentosAccesos;
-use App\Support\AlcanceAreaUsuario;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
@@ -19,13 +18,6 @@ class ResponsableController extends Controller
         $responsables = Responsable::query()
             ->with(['dependencia', 'area'])
             ->withCount(['asignaciones as bienes_asignados' => fn ($q) => $q->whereNull('fecha_fin')])
-            ->when(! AlcanceAreaUsuario::esSuperusuario(), function ($query) {
-                $area = AlcanceAreaUsuario::ubicacion()['area'];
-
-                filled($area)
-                    ? $query->where('area_id_accesos', $area)
-                    : $query->whereRaw('1 = 0');
-            })
             ->when(request('buscar'), fn ($q, $v) => $q->where(fn ($q) => $q->where('numero_empleado', 'like', "%{$v}%")->orWhere('nombre', 'like', "%{$v}%")->orWhere('apellido_paterno', 'like', "%{$v}%")->orWhere('cargo', 'like', "%{$v}%")))
             ->when(request()->filled('estado'), fn ($q) => $q->where('activo', request('estado') === 'activo'))
             ->latest()->paginate(10)->withQueryString();
