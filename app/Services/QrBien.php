@@ -92,9 +92,25 @@ SVG;
 
     private function fuente(string $archivo): ?string
     {
-        $ruta = rtrim((string) getenv('WINDIR'), '\\').DIRECTORY_SEPARATOR.'Fonts'.DIRECTORY_SEPARATOR.$archivo;
+        $candidatas = [
+            // Fuentes empaquetadas con el proyecto (funcionan en Windows y Linux).
+            base_path('resources/fonts/'.$archivo),
+            $archivo === 'arialbd.ttf' ? base_path('resources/fonts/DejaVuSans-Bold.ttf') : base_path('resources/fonts/DejaVuSans.ttf'),
+            $archivo === 'arialbd.ttf' ? base_path('resources/fonts/LiberationSans-Bold.ttf') : base_path('resources/fonts/LiberationSans-Regular.ttf'),
+            // Windows (desarrollo local).
+            rtrim((string) getenv('WINDIR'), '\\').DIRECTORY_SEPARATOR.'Fonts'.DIRECTORY_SEPARATOR.$archivo,
+            // Linux (producción): DejaVu soporta tildes/ñ y suele estar instalado.
+            '/usr/share/fonts/truetype/dejavu/'.($archivo === 'arialbd.ttf' ? 'DejaVuSans-Bold.ttf' : 'DejaVuSans.ttf'),
+            '/usr/share/fonts/truetype/liberation/'.($archivo === 'arialbd.ttf' ? 'LiberationSans-Bold.ttf' : 'LiberationSans-Regular.ttf'),
+        ];
 
-        return is_file($ruta) ? $ruta : null;
+        foreach ($candidatas as $ruta) {
+            if ($ruta && is_file($ruta)) {
+                return $ruta;
+            }
+        }
+
+        return null;
     }
 
     private function centrarTexto($imagen, string $texto, int $y, int $tamano, int $color, ?string $fuente): void
@@ -106,8 +122,11 @@ SVG;
             return;
         }
 
+        // Sin fuente TTF (servidor sin tipografías): la fuente interna de GD solo
+        // maneja ASCII, así que se transliteran tildes/ñ para no imprimir basura.
+        $texto = (string) (iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texto) ?: $texto);
         $tamanoInterno = 5;
-        imagestring($imagen, $tamanoInterno, (int) ((imagesx($imagen) - imagefontwidth($tamanoInterno) * strlen($texto)) / 2), $y - imagefontheight($tamanoInterno), $texto, $color);
+        imagestring($imagen, $tamanoInterno, (int) ((imagesx($imagen) - imagefontwidth($tamanoInterno) * mb_strlen($texto)) / 2), $y - imagefontheight($tamanoInterno), $texto, $color);
     }
 
     private function dividirTexto(string $texto, int $limite): array

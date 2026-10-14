@@ -9,11 +9,12 @@ class BienPublicoController extends Controller
 {
     public function show(string $publicId)
     {
-        $bien = Bien::with(['categoria', 'dependencia', 'area', 'valores.campo'])->where('public_id', $publicId)->firstOrFail();
+        $bien = Bien::with(['categoria', 'dependencia', 'area', 'valores.campo', 'asignacionActual.responsable'])->where('public_id', $publicId)->firstOrFail();
         $ficha = $bien->only(['public_id', 'folio_sicam', 'numero_patrimonial', 'nombre', 'estado', 'dependencia_id_accesos', 'area_id_accesos']);
         $ficha['categoria'] = $bien->categoria?->nombre;
         $ficha['dependencia_id_accesos'] = $bien->dependencia?->nombre;
         $ficha['area_id_accesos'] = $bien->area?->nombre;
+        $ficha['responsable'] = $bien->asignacionActual?->responsable?->nombre_completo;
         $ficha['fotografia'] = (bool) $bien->fotografia_path;
         $ficha['caracteristicas'] = $bien->valores
             ->filter(fn ($valor) => filled($valor->campo?->nombre) && filled($valor->valor))

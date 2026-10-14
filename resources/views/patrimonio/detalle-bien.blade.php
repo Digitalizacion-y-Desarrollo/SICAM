@@ -11,7 +11,7 @@
             @can('bienes.editar')
                 <a data-crud href="{{ route('patrimonio.bienes.edit', $bien) }}" class="action-button">Editar</a>
             @endcan
-            <a data-download data-filename="{{ $bien->folio_sicam }}.svg" href="{{ route('patrimonio.bienes.qr', ['bien' => $bien, 'formato' => 'svg']) }}" class="action-button action-button-primary">Descargar QR</a>
+            <a data-download data-filename="{{ $bien->folio_sicam }}.png" href="{{ route('patrimonio.bienes.qr', ['bien' => $bien, 'formato' => 'png']) }}" class="action-button action-button-primary">Descargar QR</a>
             @can('bienes.eliminar')
                 <form method="POST" action="{{ route('patrimonio.bienes.destroy', $bien) }}">@csrf @method('DELETE')<button class="action-button text-red-700">Eliminar</button></form>
             @endcan

@@ -8,7 +8,7 @@
             <p class="text-sm font-semibold text-brand">{{ $ficha['folio_sicam'] }}</p><h1 class="mt-2 text-2xl font-bold">{{ $ficha['nombre'] }}</h1>
             @if($ficha['fotografia'])<img src="{{ route('bienes.publico.fotografia', $ficha['public_id']) }}" alt="Fotografía del bien" class="my-5 max-h-80 w-full rounded-lg object-contain">@endif
             <dl class="mt-6 grid gap-5 sm:grid-cols-2">
-                @foreach(['numero_patrimonial' => 'Número patrimonial', 'categoria' => 'Categoría', 'estado' => 'Estado', 'dependencia_id_accesos' => 'Dependencia', 'area_id_accesos' => 'Área'] as $key => $label)
+                @foreach(['numero_patrimonial' => 'Número patrimonial', 'categoria' => 'Categoría', 'estado' => 'Estado', 'responsable' => 'Responsable', 'dependencia_id_accesos' => 'Dependencia', 'area_id_accesos' => 'Área'] as $key => $label)
                     <div><dt class="text-xs text-muted">{{ $label }}</dt><dd class="mt-1 break-words text-sm font-semibold">{{ $key === 'estado' ? str_replace('_', ' ', $ficha[$key]) : ($ficha[$key] ?: 'No registrado') }}</dd></div>
                 @endforeach
                 @foreach($ficha['caracteristicas'] as $caracteristica)

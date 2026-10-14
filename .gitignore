@@ -22,3 +22,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+# Fuentes propietarias de Microsoft (no redistribuibles, solo uso local).
+/resources/fonts/arial.ttf
+/resources/fonts/arialbd.ttf

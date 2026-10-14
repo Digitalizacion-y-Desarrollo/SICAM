@@ -114,7 +114,7 @@ class BienController extends Controller
 
     public function qr(Bien $bien, QrBien $qr)
     {
-        $formato = request()->validate(['formato' => ['nullable', Rule::in(['svg', 'png'])]])['formato'] ?? 'svg';
+        $formato = request()->validate(['formato' => ['nullable', Rule::in(['svg', 'png'])]])['formato'] ?? 'png';
 
         return response($qr->etiqueta($bien, $formato))->header('Content-Type', $formato === 'png' ? 'image/png' : 'image/svg+xml; charset=UTF-8')
             ->header('Content-Disposition', 'attachment; filename="'.$bien->folio_sicam.'.'.$formato.'"');
