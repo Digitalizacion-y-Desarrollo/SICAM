@@ -4,9 +4,14 @@
 @section('breadcrumb', 'Software / Resumen')
 
 @section('content')
-@php($recientes->each(function ($sistema) { $sistema->setAttribute('dependencia_id_accesos', $sistema->dependencia?->nombre); $sistema->setAttribute('area_id_accesos', $sistema->area?->nombre); }))
-@php($porDependencia->each(fn ($sistema) => $sistema->setAttribute('dependencia_id_accesos', $sistema->dependencia?->nombre)))
     @php
+        $recientes->each(function ($sistema) {
+            $sistema->setAttribute('dependencia_id_accesos', $sistema->dependencia?->nombre);
+            $sistema->setAttribute('area_id_accesos', $sistema->area?->nombre);
+        });
+
+        $porDependencia->each(fn ($sistema) => $sistema->setAttribute('dependencia_id_accesos', $sistema->dependencia?->nombre));
+
         $estadoClases = [
             'produccion' => 'bg-emerald-50 text-emerald-700',
             'desarrollo' => 'bg-blue-50 text-blue-700',
